@@ -4,21 +4,46 @@ The Factorial Snow Model (FSM) is a multi-physics energy balance model of accumu
 
 ## Building the model
 
-FSM is coded in Fortran. An executable `FSM.exe` is produced by the scripts `compil.sh` for Linux or `compil.bat` for Windows using the [Gfortran](https://gcc.gnu.org/wiki/GFortran) compiler.
+FSM is coded in Fortran. An executable `FSM.exe` is produced by the scripts `compil.sh` for Linux or `compil.bat` for Windows using the [gfortran](https://gcc.gnu.org/wiki/GFortran) compiler.
 
 ## Running the model
 
 FSM requires meteorological driving data and namelists to set options and parameters. 
 
-| Configuration  |      Are      |  Cool |
-|----------|:-------------:|------:|
-| col 1 is |  left-aligned | $1600 |
-| col 2 is |    centered   |   $12 |
-| col 3 is | right-aligned |    $1 |
+
 
 
 | Configuration  | n<sub>a</sub>|  n<sub>c</sub> | n<sub>d</sub> | n<sub>e</sub> | n<sub>w</sub> |
-|--------------:|:---:|:---:|:---:|:---:|:---:|
+|---:|:-:|:-:|:-:|:-:|:-:|
+|  0 | 0 | 0 | 0 | 0 | 0 |
 |  1 | 0 | 0 | 0 | 0 | 1 |
 |  2 | 0 | 0 | 0 | 1 | 0 |
-| 10 | 0 | 0 | 0 | 1 | 1 |
+|  3 | 0 | 0 | 0 | 1 | 1 |
+|  4 | 0 | 0 | 1 | 0 | 0 |
+|  5 | 0 | 0 | 1 | 0 | 1 |
+|  6 | 0 | 0 | 1 | 1 | 0 |
+|  7 | 0 | 0 | 1 | 1 | 1 |
+|  8 | 0 | 1 | 0 | 0 | 0 |
+|  9 | 0 | 1 | 0 | 0 | 1 |
+| 10 | 0 | 1 | 0 | 1 | 0 |
+| 11 | 0 | 1 | 0 | 1 | 1 |
+| 12 | 0 | 1 | 1 | 0 | 0 |
+| 13 | 0 | 1 | 1 | 0 | 1 |
+| 14 | 0 | 1 | 1 | 1 | 0 |
+| 15 | 0 | 1 | 1 | 1 | 1 |
+| 16 | 1 | 0 | 0 | 0 | 0 |
+| 17 | 1 | 0 | 0 | 0 | 1 |
+| 18 | 1 | 0 | 0 | 1 | 0 |
+| 19 | 1 | 0 | 0 | 1 | 1 |
+| 20 | 1 | 0 | 1 | 0 | 0 |
+| 21 | 1 | 0 | 1 | 0 | 1 |
+| 22 | 1 | 0 | 1 | 1 | 0 |
+| 23 | 1 | 0 | 1 | 1 | 1 |
+| 24 | 1 | 1 | 0 | 0 | 0 |
+| 25 | 1 | 1 | 0 | 0 | 1 |
+| 26 | 1 | 1 | 0 | 1 | 0 |
+| 27 | 1 | 1 | 0 | 1 | 1 |
+| 28 | 1 | 1 | 1 | 0 | 0 |
+| 29 | 1 | 1 | 1 | 0 | 1 |
+| 30 | 1 | 1 | 1 | 1 | 0 |
+| 31 | 1 | 1 | 1 | 1 | 1 |

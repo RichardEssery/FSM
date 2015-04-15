@@ -18,7 +18,7 @@ FSM requires meteorological driving data and namelists to set options and parame
 
 
 | Configuration  | n<sub>a</sub>|  n<sub>c</sub> | n<sub>d</sub> | n<sub>e</sub> | n<sub>w</sub> |
-|--------------:-|:---:|:---:|:---:|:---:|:---:|
+|--------------:|:---:|:---:|:---:|:---:|:---:|
 |  1 | 0 | 0 | 0 | 0 | 1 |
 |  2 | 0 | 0 | 0 | 1 | 0 |
 | 10 | 0 | 0 | 0 | 1 | 1 |

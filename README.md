@@ -12,7 +12,33 @@ FSM requires meteorological driving data and namelists to set options and parame
 
     .\FSM.exe < nlst.txt
 
-where 'nlst.txt' is a text file containing five namelists.
+where `nlst.txt` is a text file containing five namelists.
+
+### Driving data
+
+Meteorological driving data are read from a text file named in namelist `&drive`.
+
+| Variable | Units  | Description       |
+|----------|--------|-------------------|
+| year     | years  | Year              |
+| month    | months | Month of the year |
+| day      | days   | Day of the month  |
+| hour     | hours  | Hour of the day   |
+| SW       | W <sup>-2</sup> | Incoming shortwave radiation   |
+| LW       | W <sup>-2</sup> | Incoming longwave radiation    |
+| Sf       | kg m<sup>-2</sup> s<sup>-1</sup> | Snowfall rate |
+| Rf       | kg m<sup>-2</sup> s<sup>-1</sup> | Rainfall rate |
+| Ta       | K      | Air temperature      |
+| RH       | RH     | Relative humidity    |
+| Ua       | m s<sup>-1</sup> | Wind speed |
+| Ps       | Pa     | Surface air pressure |
+
+    2005  10   1   0     0.0   283.1  .000E+00  .000E+00   277.8    78.2     0.6   87480.
+    2005  10   1   1     0.0   284.7  .000E+00  .000E+00   278.0    73.1     0.0   87430.
+    2005  10   1   2     0.0   285.8  .000E+00  .000E+00   277.7    76.1     1.0   87390.
+    2005  10   1   3     0.0   288.1  .000E+00  .000E+00   278.3    72.0     0.5   87380.
+
+### Namelist '&params'
 
 | Variable | Default | Units | Description |
 |----------|---------|-------|-------------|

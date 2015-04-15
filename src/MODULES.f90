@@ -125,7 +125,7 @@ real :: &
 ! Surface parameters
 real :: &
   alb0,              &! Snow-free ground albedo
-  gcrt,              &! Surface conductance at critical point (m/s
+  gcrt,              &! Surface conductance at critical point (m/s)
   z0sf                ! Snow-free roughness length (m)
 end module PARAMETERS
 

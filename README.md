@@ -10,6 +10,13 @@ FSM is coded in Fortran. An executable `FSM.exe` is produced by the scripts `com
 
 FSM requires meteorological driving data and namelists to set options and parameters. 
 
+| Tables   |      Are      |  Cool |
+|----------|:-------------:|------:|
+| col 1 is |  left-aligned | $1600 |
+| col 2 is |    centered   |   $12 |
+| col 3 is | right-aligned |    $1 |
+
+
 | Configuration  | n<sub>a</sub>|  n<sub>c</sub> | n<sub>d</sub> | n<sub>e</sub> | n<sub>w</sub> |
 |--------------:-|:---:|:---:|:---:|:---:|:---:|
 |  1 | 0 | 0 | 0 | 0 | 1 |

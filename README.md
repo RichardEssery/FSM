@@ -6,7 +6,7 @@ The Factorial Snow Model (FSM) is a multi-physics energy balance model of accumu
 
 ## Building the model
 
-FSM is coded in Fortran. An executable `FSM.exe` is produced by running the script `compil.sh` for Linux or `compil.bat` for Windows. Both script use the [gfortran](https://gcc.gnu.org/wiki/GFortran) compiler but could be editied to use other compilers.
+FSM is coded in Fortran. An executable `FSM.exe` is produced by running the script `compil.sh` for Linux or `compil.bat` for Windows. Both scripts use the [gfortran](https://gcc.gnu.org/wiki/GFortran) compiler but could be edited to use other compilers.
 
 ## Running the model
 
@@ -14,11 +14,11 @@ FSM requires meteorological driving data and namelists to set options and parame
 
     .\FSM.exe < nlst.txt
 
-where `nlst.txt` is a text file containing five namelists.
+where `nlst.txt` is a text file containing five namelists; `nlst_CdP_0506.txt` gives an example to run FSM for the winter of 2005-2006 at Col de Porte (Morin et al. 2011). All of the namelists have to be present in the same order as in the example, but any or all of the namelist variables liste din the tables below can be omitted; defaults are then used.
 
 ### Driving data
 
-Meteorological driving data are read from a text file named in namelist `&drive`.
+Meteorological driving data are read from a text file named in namelist `&drive`. A driving data file has 12 columns containing the variables listed in the table below. Each row of the file corresponds with a timestep. Driving data for the Col de Porte example are given in file `data/met-CdP_0506.txt`.
 
 | Variable | Units  | Description       |
 |----------|--------|-------------------|
@@ -26,8 +26,8 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | month    | months | Month of the year |
 | day      | days   | Day of the month  |
 | hour     | hours  | Hour of the day   |
-| SW       | W <sup>-2</sup> | Incoming shortwave radiation   |
-| LW       | W <sup>-2</sup> | Incoming longwave radiation    |
+| SW       | W m<sup>-2</sup> | Incoming shortwave radiation  |
+| LW       | W m<sup>-2</sup> | Incoming longwave radiation   |
 | Sf       | kg m<sup>-2</sup> s<sup>-1</sup> | Snowfall rate |
 | Rf       | kg m<sup>-2</sup> s<sup>-1</sup> | Rainfall rate |
 | Ta       | K      | Air temperature      |
@@ -40,13 +40,17 @@ Meteorological driving data are read from a text file named in namelist `&drive`
     2005  10   1   2     0.0   285.8  .000E+00  .000E+00   277.7    76.1     1.0   87390.
     2005  10   1   3     0.0   288.1  .000E+00  .000E+00   278.3    72.0     0.5   87380.
 
-### Namelist '&config'
+### Model configuration namelist 
+
+'&config'
 
 | Variable | Range | Default | Description |
 |----------|-------|---------|-------------|
 | [nconfig](#configs) | 0 - 31 | 31 | Configuration number |
 
-### Namelist '&drive'
+### Driving data namelist 
+
+'&drive'
 
 | Variable | Default | Units | Description |
 |----------|---------|-------|-------------|
@@ -57,7 +61,9 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | zvar     | .TRUE.    | logical | Subtract snow depth from measurement height? |
 
 
-### Namelist '&params'
+### Parameter namelist 
+
+'&params'
 
 | Variable | Default | Units | Description |
 |----------|---------|-------|-------------|
@@ -79,7 +85,9 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | z0sf | 0.1  | m    | Snow-free roughness length                         |
 | z0sn | 0.01 | m    | Snow roughness length                              |
 
-### Namelist '&outputs'
+### Output namelist 
+
+'&outputs'
 
 | Variable | Default | Description |
 |----------|---------|-------------|

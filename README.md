@@ -12,9 +12,9 @@ FSM is coded in Fortran. An executable `FSM.exe` is produced by running the scri
 
 FSM requires meteorological driving data and namelists to set options and parameters. The model is run with the command
 
-    .\FSM.exe < nlst.txt
+    ./FSM.exe < nlst.txt
 
-where `nlst.txt` is a text file containing five namelists; `nlst_CdP_0506.txt` gives an example to run FSM for the winter of 2005-2006 at Col de Porte (Morin et al. 2011). All of the namelists have to be present in the same order as in the example, but any or all of the namelist variables liste din the tables below can be omitted; defaults are then used.
+where `nlst.txt` is a text file containing five namelists; `nlst_CdP_0506.txt` gives an example to run FSM for the winter of 2005-2006 at Col de Porte ([Morin et al. 2011](#Morin)). All of the namelists have to be present in the same order as in the example, but any or all of the namelist variables liste din the tables below can be omitted; defaults are then used.
 
 ### Driving data
 
@@ -35,14 +35,9 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | Ua       | m s<sup>-1</sup> | Wind speed |
 | Ps       | Pa     | Surface air pressure |
 
-    2005  10   1   0     0.0   283.1  .000E+00  .000E+00   277.8    78.2     0.6   87480.
-    2005  10   1   1     0.0   284.7  .000E+00  .000E+00   278.0    73.1     0.0   87430.
-    2005  10   1   2     0.0   285.8  .000E+00  .000E+00   277.7    76.1     1.0   87390.
-    2005  10   1   3     0.0   288.1  .000E+00  .000E+00   278.3    72.0     0.5   87380.
-
 ### Model configuration namelist 
 
-'&config'
+`&config`
 
 | Variable | Range | Default | Description |
 |----------|-------|---------|-------------|
@@ -50,7 +45,7 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 
 ### Driving data namelist 
 
-'&drive'
+`&drive`
 
 | Variable | Default | Units | Description |
 |----------|---------|-------|-------------|
@@ -63,7 +58,7 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 
 ### Parameter namelist 
 
-'&params'
+`&params`
 
 | Variable | Default | Units | Description |
 |----------|---------|-------|-------------|
@@ -87,7 +82,7 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 
 ### Output namelist 
 
-'&outputs'
+`&outputs`
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -130,3 +125,8 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | 29 | 1 | 1 | 1 | 0 | 1 |
 | 30 | 1 | 1 | 1 | 1 | 0 |
 | 31 | 1 | 1 | 1 | 1 | 1 |
+
+## References
+
+<a name="Morin"></a> Morin et al. (2012). A 18-yr long (1993-2011) snow and meteorological dataset from a mid-altitude mountain site (Col de Porte, France, 1325 m alt.) for driving and evaluating snowpack models. *Earth System Science Data*, **4**(1), 13-21, doi:10.5194/essd-4-13-2012
+

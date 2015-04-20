@@ -8,7 +8,8 @@
 &params
 /
 &initial
-Tsoil = 282.98 284.17 284.70 284.70
+  Tsoil = 282.98 284.17 284.70 284.70
 /
 &outputs
+  out_file = 'out_CdP_0506.txt'
 /

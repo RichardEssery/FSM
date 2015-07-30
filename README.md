@@ -86,7 +86,7 @@ Switch `zvar` is included because the temperature and relative humidity sensors 
 | rcld | 300  | kg m<sup>-3</sup> | Maximum density for cold snow (n<sub>d</sub>=1)    |
 | rmlt | 500  | kg m<sup>-3</sup> | Maximum density for melting snow (n<sub>d</sub>=1) |
 | Salb | 10   | kg m<sup>-2</sup> | Snowfall to refresh albedo (n<sub>a</sub>=1)       |
-| Talb | -2   | &deg C| Albedo decay temperature threshold (n<sub>a</sub>=0)           |
+| Talb | -2   | &deg;C| Albedo decay temperature threshold (n<sub>a</sub>=0)           |
 | tcld | 1000 | h    | Cold snow albedo decay timescale (n<sub>a</sub>=1)              |
 | tmlt | 100  | h    | Melting snow albedo decay timescale (n<sub>a</sub>=1)           |
 | trho | 200  | h    | Compaction time scale (n<sub>d</sub>=1)                         |
@@ -126,8 +126,8 @@ At present a simple fixed output format is used. The output text file has 10 col
 | Rof      | kg m<sup>-2</sup> | Cumulated runoff from snow    |
 | snd      | m      | Average snow depth                       |
 | SWE      | kg m<sup>-2</sup> | Average snow water equivalent |
-| Tsf      | &deg C | Average surface temperature              |
-| Tsl      | &deg C | Average soil temperature at 20 cm depth  |
+| Tsf      | &deg;C | Average surface temperature              |
+| Tsl      | &deg;C | Average soil temperature at 20 cm depth  |
  
 ### <a name="configs"></a> Model configurations
 

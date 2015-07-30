@@ -27,7 +27,7 @@ beta = b(1)
 x(1) = r(1) / beta
 
 do n = 2, Nvec
-  gamma(n) = C(n-1) / beta
+  gamma(n) = c(n-1) / beta
   beta = b(n) - a(n)*gamma(n)
   x(n) = (r(n) - a(n)*x(n-1)) / beta
 end do

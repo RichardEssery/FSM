@@ -13,6 +13,7 @@ import os
 import sys
 
 namelist = sys.argv[1]
+os.system('./compil.sh')
 
 try:
     os.mkdir('output')
@@ -33,7 +34,7 @@ for n in range(32):
                 out_file = line.rsplit()[-1]
             out_name = out_file.replace('.txt','')
     f.close()
-    os.system('./FSM.exe < nlst.txt')
+    os.system('./FSM < nlst.txt')
     save_file = 'output/'+out_name+'_'+config+'.txt'
     os.system('mv '+out_file+' '+save_file)
 os.system('rm nlst.txt')

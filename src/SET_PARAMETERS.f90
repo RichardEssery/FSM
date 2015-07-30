@@ -26,23 +26,28 @@ use MODELS, only: &
                       !                          1 - prognostic
   em,                &! Surface exchange model   0 - fixed
                       !                          1 - stability correction
-  hm                  ! Snow hydrology model     0 - free draining 
+  hm                  ! Snow hydraulics model    0 - free draining 
                       !                          1 - bucket storage
 
 use PARAMETERS, only : &
-  adct,              &! Cold snow albedo decay timescale (h)
-  admt,              &! Melting snow albedo decay timescale (h)
   alb0,              &! Snow-free ground albedo
   asmx,              &! Maximum albedo for fresh snow
   asmn,              &! Minimum albedo for melting snow
-  eta0,              &! Snow compactive viscosity (Pa s)
-  gcrt,              &! Surface conductance at critical point (m/s)
+  bstb,              &! Stability slope parameter
+  bthr,              &! Snow thermal conductivity exponent
+  gsat,              &! Surface conductance for saturated soil (m/s)
+  hfsn,              &! Snow cover fraction depth scale (m)
   kfix,              &! Thermal conductivity at fixed snow density (W/m/K)
   rho0,              &! Fixed snow density (kg/m^3)
   rhof,              &! Fresh snow density (kg/m^3)
-  Sfmn,              &! Minimum snowfall to refresh albedo (kg/m^2)
-  smsk,              &! Snow masking depth (m)
-  Swir,              &! Irreducible liquid water content of snow
+  rcld,              &! Maximum density for cold snow (kg/m^3)
+  rmlt,              &! Maximum density for melting snow (kg/m^3)
+  Salb,              &! Snowfall to refresh albedo (kg/m^2)
+  Talb,              &! Albedo decay temperature threshold (C)
+  tcld,              &! Cold snow albedo decay timescale (h)
+  tmlt,              &! Melting snow albedo decay timescale (h)
+  trho,              &! Snow compaction time scale (h)
+  Wirr,              &! Irreducible liquid water content of snow
   z0sf,              &! Snow-free roughness length (m)
   z0sn                ! Snow roughness length (m)
 
@@ -69,8 +74,8 @@ real :: &
 
 namelist /config/ nconfig
 namelist /drive/ met_file,dt,zT,zU,zvar
-namelist /params/ adct,admt,alb0,asmx,asmn,eta0,fcly,fsnd,gcrt,  &
-                  kfix,rho0,rhof,Sfmn,smsk,Swir,z0sf,z0sn
+namelist /params/ alb0,asmx,asmn,bstb,bthr,fcly,fsnd,gsat,hfsn,kfix,rho0,  &
+                  rhof,rcld,rmlt,Salb,Talb,tcld,tmlt,trho,Wirr,z0sf,z0sn
 
 ! Read configuration number and set model swithches
 nconfig = 31
@@ -91,25 +96,33 @@ read(5,drive)
 open(umet, file = met_file)
 
 ! Defaults for snow parameters
-adct = 1000
-admt = 100
 asmx = 0.8
 asmn = 0.5
-eta0 = 1E7
-fcly = 0.3
-fsnd = 0.6
+bstb = 5
+bthr = 2
+hfsn = 0.1
 kfix = 0.24
 rho0 = 300
 rhof = 100
-Sfmn = 10
-smsk = 0.02
-Swir = 0.03
+rcld = 300
+rmlt = 500
+Salb = 10
+Talb = -2
+tcld = 1000
+tmlt = 100
+trho = 200
+Wirr = 0.03
 z0sn = 0.01
 
 ! Defaults for surface parameters
 alb0 = 0.2
-gcrt = 0.01
+bstb = 5
+gsat = 0.01
 z0sf = 0.1
+
+! Defaults for soil parameters
+fcly = 0.3
+fsnd = 0.6
 
 ! Read parameter namelist and overwrite defaults
 read(5,params)

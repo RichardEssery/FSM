@@ -35,17 +35,19 @@ use MODELS, only: &
                       !                          1 - prognostic
 
 use PARAMETERS, only : &
-  adct,              &! Cold snow albedo decay timescale (h)
-  admt,              &! Melting snow albedo decay timescale (h)
   alb0,              &! Snow-free ground albedo
   asmx,              &! Maximum albedo for fresh snow
   asmn,              &! Minimum albedo for melting snow
-  gcrt,              &! Surface conductance at critical point (m/s)
+  bthr,              &! Snow thermal conductivity exponent
+  gsat,              &! Surface conductance for saturated soil (m/s)
+  hfsn,              &! Snow cover fraction depth scale (m)
   kfix,              &! Thermal conductivity at fixed snow density (W/m/K)
   rho0,              &! Fixed snow density (kg/m^3)
   rhof,              &! Fresh snow density (kg/m^3)
-  Sfmn,              &! Minimum snowfall to refresh albedo (kg/m^2)
-  smsk,              &! Snow masking depth (m)
+  Salb,              &! Snowfall to refresh albedo (kg/m^2)
+  Talb,              &! Albedo decay temperature threshold (C)
+  tcld,              &! Cold snow albedo decay timescale (h)
+  tmlt,              &! Melting snow albedo decay timescale (h)
   z0sf,              &! Snow-free roughness length (m)
   z0sn                ! Snow roughness length (m)
 
@@ -101,7 +103,7 @@ real :: &
   rt,                &! Reciprocal timescale for albedo adjustment (1/s)
   Smf,               &! Fractional frozen soil moisture concentration
   Smu,               &! Fractional unfrozen soil moisture concentration
-  tau,               &! Snow albedo decay timescale (h)
+  tau,               &! Snow albedo decay timescale (s)
   Tc,                &! Soil temperature (C)
   theta,             &! Total soil moisture concentration
   thice,             &! Soil ice saturation at current liquid / ice ratio
@@ -111,12 +113,12 @@ real :: &
 ! Snow albedo
 select case(am)
 case(0)  ! Diagnosed snow albedo
-  albs = asmn + (asmx - asmn)*(Tm - Tsurf) / 2
+  albs = asmn + (asmx - asmn)*(Tsurf - Tm) / Talb
 case(1)  ! Prognostic snow albedo
-  tau = 3600*adct
-  if (Tsurf >= Tm) tau = 3600*admt
-  rt = 1/tau + Sf/Sfmn
-  alim = (asmn/tau + Sf*asmx/Sfmn)/rt
+  tau = 3600*tcld
+  if (Tsurf >= Tm) tau = 3600*tmlt
+  rt = 1/tau + Sf/Salb
+  alim = (asmn/tau + Sf*asmx/Salb)/rt
   albs = alim + (albs - alim)*exp(-rt*dt)
 end select
 if (albs > asmx) albs = asmx
@@ -132,15 +134,12 @@ if (cm == 1) then  ! Density function
   do k = 1, Nsnow
     rhos = rfs
     if (dm == 1 .and. Ds(k) > epsilon(Ds)) rhos = (Sice(k) + Sliq(k)) / Ds(k)
-    ksnow(k) = hcon_ice*(rhos/rho_ice)**2
+    ksnow(k) = hcon_ice*(rhos/rho_ice)**bthr
   end do
 end if
 
 ! Partial snow cover
-rhos = rho0
-if (snowdepth > epsilon(snowdepth)) rhos = sum(Sice + Sliq) / snowdepth
-fsnow = tanh(snowdepth/(smsk*(rhos/100)**1.6))
-fsnow = tanh(snowdepth/smsk)
+fsnow = tanh(snowdepth/hfsn)
 alb = fsnow*albs + (1 - fsnow)*alb0
 z0 = (z0sn**fsnow) * (z0sf**(1 - fsnow))
 
@@ -160,7 +159,7 @@ do k = 1, Nsoil
                + rho_wat*Dzsoil(k)*((hcap_wat - hcap_ice)*Tc + Lf)*dthudT
     Smf = Mf(k) / (rho_wat*Dzsoil(k)*Vsat)
     Smu = Mu(k) / (rho_wat*Dzsoil(k)*Vsat)
-    if (k == 1) gs = gcrt*(Smu*Vsat/Vcrit)**2
+    if (k == 1) gs = gsat*(Smu*Vsat/Vcrit)**2
     thice = 0
     if (Smf > 0) thice = Vsat*Smf / (Smu + Smf) 
     thwat = 0

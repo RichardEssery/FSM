@@ -28,13 +28,15 @@ use GRID, only : &
 use MODELS, only: &
   dm,                &! Snow density model       0 - fixed
                       !                          1 - prognostic
-  hm                  ! Snow hydrology model     0 - free draining 
+  hm                  ! Snow hydraulics model    0 - free draining 
                       !                          1 - bucket storage
 
 use PARAMETERS, only : &
-  eta0,              &! Snow compactive viscosity (Pa s)
   rho0,              &! Fixed snow density (kg/m^3)
-  Swir                ! Irreducible liquid water content of snow
+  rcld,              &! Maximum density for cold snow (kg/m^3)
+  rmlt,              &! Maximum density for melting snow (kg/m^3)
+  trho,              &! Snow compaction time scale (h)
+  Wirr                ! Irreducible liquid water content of snow
 
 implicit none
 
@@ -81,12 +83,12 @@ real :: &
   coldcont,          &! Layer cold content (J/m^2)
   dl,                &! Local snow depth (m)
   dSice,             &! Change in layer ice content (kg/m^2)
-  mass,              &! Mass of overlying snow (kg/m^2)
   oldthick,          &! Remaining thickness in old layer (m)
   phi,               &! Porosity
   rhos,              &! Density of snow layer (kg/m^3)
   Sice0,             &! Ice content of fresh snow (kg/m^2)
   SliqMax,           &! Maximum liquid content for layer (kg/m^2)
+  tau,               &! Snow compaction timescale (s)
   Tsnow0,            &! Temperature of fresh snow (K)
   wt                  ! Layer weighting
 
@@ -177,7 +179,7 @@ if (Nsnow > 0) then   ! Existing snowpack
     end do
   end if
 
-! Snow hydrology
+! Snow hydraulics
   select case(hm)
   case(0)  !  Free-draining snow 
     do k = 1, Nsnow
@@ -188,7 +190,7 @@ if (Nsnow > 0) then   ! Existing snowpack
     do k = 1, Nsnow
       phi = 0
       if (Ds(k) > epsilon(Ds)) phi = 1 - Sice(k)/(rho_ice*Ds(k))
-      SliqMax = rho_wat*Ds(k)*phi*Swir
+      SliqMax = rho_wat*Ds(k)*phi*Wirr
       Sliq(k) = Sliq(k) + Roff
       Roff = 0
       if (Sliq(k) > SliqMax) then  ! Liquid capacity exceeded
@@ -212,13 +214,16 @@ if (Nsnow > 0) then   ! Existing snowpack
       Ds(k) = (Sice(k) + Sliq(k)) / rho0
     end do
   case(1)  ! Prognostic snow density
-    mass = 0
+    tau = 3600*trho
     do k = 1, Nsnow
       if (Ds(k) > epsilon(Ds)) then
-        mass = mass + 0.5*(Sice(k) + Sliq(k))
         rhos = (Sice(k) + Sliq(k)) / Ds(k)
-        Ds(k) = Ds(k)*(1 - (g*mass*dt/eta0)*exp(4000*(1/Tm - 1/Tsnow(k)) - rhos/50))
-        mass = mass + 0.5*(Sice(k) + Sliq(k))
+        if (Tsnow(k) >= Tm) then
+            if (rhos < rmlt) rhos = rmlt + (rhos - rmlt)*exp(-dt/tau)
+        else
+            if (rhos < rcld) rhos = rcld + (rhos - rcld)*exp(-dt/tau)
+        end if
+        Ds(k) = (Sice(k) + Sliq(k)) / rhos
       end if
     end do
   end select

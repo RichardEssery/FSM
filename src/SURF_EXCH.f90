@@ -17,6 +17,8 @@ use DRIVING, only : &
 use MODELS, only: &
   em                  ! Surface exchange model   0 - fixed
                       !                          1 - stability correction
+use PARAMETERS, only : &
+  bstb                ! Stability slope parameter
 
 implicit none
 
@@ -50,9 +52,9 @@ CH = vkman**2 / (log(zU/z0)*log(zTs/z0h))
 if (em == 1) then
   RiB = g*(Ta - Tsurf)*zU**2 / (zTs*Ta*Ua**2)
   if (RiB > 0) then 
-    fh = 1/(1 + 15*RiB*sqrt(1 + 5*RiB))
+    fh = 1/(1 + 3*bstb*RiB*sqrt(1 + bstb*RiB))
   else
-    fh = 1 - 15*RiB / (1 + 75*CD*sqrt(-RiB*zU/z0))
+    fh = 1 - 3*bstb*RiB / (1 + 3*bstb**2*CD*sqrt(-RiB*zU/z0))
   end if
   CH = fh*CH
 end if

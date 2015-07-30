@@ -107,7 +107,6 @@ end if
 Esurf = Esurf + dE
 Gsurf = Gsurf + dG
 Tsurf = Tsurf + dTs
-
 if (Tsurf > Tm) Esurf = 0
 
 end subroutine SURF_EBAL

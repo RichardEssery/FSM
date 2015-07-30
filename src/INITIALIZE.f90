@@ -57,7 +57,7 @@ real :: &
   Tmax                ! Maximum temperature for any frozen moisture (K)
 
 real :: &
-  fsat(Nsoil),       &! Initial fraction of soil moisture saturation
+  fsat(Nsoil),       &! Initial moisture content of soil layers as fractions of saturation
   theta(Nsoil)        ! Total soil moisture concentration
 
 namelist /initial/ fsat,Tsoil

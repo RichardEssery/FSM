@@ -100,7 +100,7 @@ integer :: &
                       !                          1 - prognostic
   em,                &! Surface exchange model   0 - fixed
                       !                          1 - stability correction
-  hm                  ! Snow hydrology model     0 - free draining 
+  hm                  ! Snow hydraulics model    0 - free draining 
                       !                          1 - bucket storage
 end module MODELS
 
@@ -110,22 +110,27 @@ end module MODELS
 module PARAMETERS
 ! Snow parameters
 real :: &
-  adct,              &! Cold snow albedo decay timescale (h)
-  admt,              &! Melting snow albedo decay timescale (h)
   asmx,              &! Maximum albedo for fresh snow
   asmn,              &! Minimum albedo for melting snow
-  eta0,              &! Snow compactive viscosity (Pa s)
+  bstb,              &! Stability slope parameter
+  bthr,              &! Snow thermal conductivity exponent
+  hfsn,              &! Snow cover fraction depth scale (m)
   kfix,              &! Fixed thermal conductivity of snow (W/m/K)
   rho0,              &! Fixed snow density (kg/m^3)
   rhof,              &! Fresh snow density (kg/m^3)
-  Sfmn,              &! Minimum snowfall to refresh albedo (kg/m^2)
-  smsk,              &! Snow masking depth (m)
-  Swir,              &! Irreducible liquid water content of snow
+  rcld,              &! Maximum density for cold snow (kg/m^3)
+  rmlt,              &! Maximum density for melting snow (kg/m^3)
+  Salb,              &! Snowfall to refresh albedo (kg/m^2)
+  Talb,              &! Albedo decay temperature threshold (C)
+  tcld,              &! Cold snow albedo decay timescale (h)
+  tmlt,              &! Melting snow albedo decay timescale (h)
+  trho,              &! Snow compaction time scale (h)
+  Wirr,              &! Irreducible liquid water content of snow
   z0sn                ! Snow roughness length (m)
 ! Surface parameters
 real :: &
   alb0,              &! Snow-free ground albedo
-  gcrt,              &! Surface conductance at critical point (m/s)
+  gsat,              &! Surface conductance for saturated soil (m/s)
   z0sf                ! Snow-free roughness length (m)
 end module PARAMETERS
 

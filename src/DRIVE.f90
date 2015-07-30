@@ -33,7 +33,6 @@ read(umet,*,end=1) year,month,day,hour,SW,LW,Sf,Rf,Ta,RH,Ua,Ps
 Ua = max(Ua, 0.1)
 call QSAT(.TRUE.,Ps,Ta,Qs)
 Qa = (RH/100)*Qs
-
 return
 
 ! End of driving data file

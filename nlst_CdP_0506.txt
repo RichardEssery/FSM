@@ -1,3 +1,4 @@
+! namelists for running FSM with the Col de Porte example
 &config
 /
 &drive

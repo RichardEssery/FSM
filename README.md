@@ -63,7 +63,7 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | zU       | 10        | m       | Wind speed measurement height  |
 | zvar     | .TRUE.    | logical | Subtract snow depth from measurement height? |
 
-Switch `zvar` is included because the temperature and relative humidity sensors at Col de Porte are moved during site visits to maintain a constant height above the snow surface.
+Switch `zvar` is provided because the temperature and relative humidity sensors at Col de Porte are moved during site visits to maintain a constant height above the snow surface.
 
 ### Parameter namelist 
 
@@ -129,7 +129,7 @@ At present a simple fixed output format is used. The output text file has 10 col
 | Tsf      | &deg;C | Average surface temperature              |
 | Tsl      | &deg;C | Average soil temperature at 20 cm depth  |
 
-Example file `data\obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
+Example file `data/obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
  
 ### <a name="configs"></a> Model configurations
 

@@ -128,6 +128,8 @@ At present a simple fixed output format is used. The output text file has 10 col
 | SWE      | kg m<sup>-2</sup> | Average snow water equivalent |
 | Tsf      | &deg;C | Average surface temperature              |
 | Tsl      | &deg;C | Average soil temperature at 20 cm depth  |
+
+Example file `data\obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
  
 ### <a name="configs"></a> Model configurations
 

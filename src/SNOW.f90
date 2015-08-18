@@ -5,7 +5,6 @@ subroutine SNOW(Esurf,Gsurf,ksnow,ksoil,Melt,rfs,Tsoil,Nsnow,  &
                 Ds,Sice,Sliq,Tsnow,Gsoil,Roff,snowdepth,SWE)
  
 use CONSTANTS, only : &
-  g,                 &! Acceleration due to gravity (m/s^2)
   hcap_ice,          &! Specific heat capacity of ice (J/K/kg)
   hcap_wat,          &! Specific heat capacity of water (J/K/kg)
   Lf,                &! Latent heat of fusion (J/kg)
@@ -147,7 +146,7 @@ if (Nsnow > 0) then   ! Existing snowpack
     if (coldcont < 0) then
       dSice = dSice - coldcont/Lf
       Tsnow(k) = Tm
-    endif
+    end if
     if (dSice > 0) then
       if (dSice > Sice(k)) then  ! Layer melts completely
         dSice = dSice - Sice(k)
@@ -158,7 +157,7 @@ if (Nsnow > 0) then   ! Existing snowpack
         Ds(k) = (1 - dSice/Sice(k))*Ds(k)
         Sice(k) = Sice(k) - dSice
         Sliq(k) = Sliq(k) + dSice
-        exit                     ! Melt exhausted
+        dSice = 0                ! Melt exhausted
       end if
     end if
   end do
@@ -174,7 +173,7 @@ if (Nsnow > 0) then   ! Existing snowpack
       else                       ! Layer sublimates partially
         Ds(k) = (1 - dSice/Sice(k))*Ds(k)
         Sice(k) = Sice(k) - dSice
-        exit                     ! Sublimation exhausted
+        dSice = 0                ! Sublimation exhausted
       end if
     end do
   end if

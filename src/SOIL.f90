@@ -1,7 +1,7 @@
 !-----------------------------------------------------------------------
 ! Update soil temperatures
 !-----------------------------------------------------------------------
-subroutine SOIL(csoil,Gsoil,ksoil,Tsoil)
+subroutine SOIL(csoil,Gsoil,ksoil)
 
 use DRIVING, only : &
   dt                  ! Timestep (s)
@@ -10,15 +10,15 @@ use GRID, only : &
   Dzsoil,            &! Soil layer thicknesses (m)
   Nsoil               ! Number of soil layers
 
+use STATE_VARIABLES, only : &
+  Tsoil               ! Soil layer temperatures (K)
+
 implicit none
 
 real, intent(in) :: &
   csoil(Nsoil),      &! Areal heat capacity of soil (J/K/m^2)
   Gsoil,             &! Heat flux into soil (W/m^2)
   ksoil(Nsoil)        ! Thermal conductivity of soil (W/m/K)
-
-real, intent(inout) :: &
-  Tsoil(Nsoil)        ! Soil layer temperatures (K)
 
 integer :: &
   k                   ! Level counter

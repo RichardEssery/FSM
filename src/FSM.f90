@@ -14,7 +14,7 @@ implicit none
 
 logical :: EoR        ! End-of-run flag
 
-integer :: i          ! Timestep counter
+integer :: n          ! Timestep counter
 
 call SET_PARAMETERS
 
@@ -23,7 +23,7 @@ call INITIALIZE
 ! Loop over timesteps
 EoR = .false.
 do
-  do i = 1, Nave
+  do n = 1, Nave
     call DRIVE(EoR)
     if (EoR) goto 1
     call PHYSICS
@@ -32,5 +32,7 @@ do
 end do
 
 1 continue
+
+call DUMP
 
 end program FSM

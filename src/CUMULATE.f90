@@ -1,20 +1,24 @@
 !-----------------------------------------------------------------------
 ! Cumulate diagnostics
 !-----------------------------------------------------------------------
-subroutine CUMULATE(alb,Roff,snowdepth,SWE,Tsoil,Tsurf,diags,SWint,SWout)
+subroutine CUMULATE(alb,Roff,snowdepth,SWE)
 
 use CONSTANTS, only : &
   Tm                  ! Melting point (K)
 
-use GRID, only : &
-  Nsoil               ! Number of soil layers
-
 use DIAGNOSTICS, only : &
-  Nave                ! Number of timesteps in average outputs
+  Nave,              &! Number of timesteps in average outputs
+  diags,             &! Cumulated diagnostics
+  SWint,             &! Cumulated incoming solar radiation (J/m^2)
+  SWout               ! Cumulated reflected solar radiation (J/m^2)
 
 use DRIVING, only: &
   dt,                &! Timestep (s)
   SW                  ! Incoming shortwave radiation (W/m2)
+
+use STATE_VARIABLES, only : &
+  Tsoil,             &! Soil layer temperatures (K)
+  Tsurf               ! Surface skin temperature (K)
 
 implicit none
 
@@ -22,14 +26,7 @@ real, intent(in) :: &
   alb,               &! Albedo
   Roff,              &! Runoff from snow (kg/m^2)
   snowdepth,         &! Snow depth (m)
-  SWE,               &! Snow water equivalent (kg/m^2)
-  Tsoil(Nsoil),      &! Soil layer temperatures (K)
-  Tsurf               ! Surface skin temperature (K)
-
-real, intent(inout) :: &
-  diags(5),          &! Cumulated diagnostics
-  SWint,             &! Cumulated incoming solar radiation (J/m^2)
-  SWout               ! Cumulated reflected solar radiation (J/m^2)
+  SWE                 ! Snow water equivalent (kg/m^2)
 
 SWint = SWint + SW*dt
 SWout = SWout + alb*SW*dt

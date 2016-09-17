@@ -1,8 +1,7 @@
 !-----------------------------------------------------------------------
 ! Snow thermodynamics and hydrology
 !-----------------------------------------------------------------------
-subroutine SNOW(Esurf,Gsurf,ksnow,ksoil,Melt,rfs,Tsoil,Nsnow,  &
-                Ds,Sice,Sliq,Tsnow,Gsoil,Roff,snowdepth,SWE)
+subroutine SNOW(Esnow,Gsurf,ksnow,ksoil,Melt,rfs,Gsoil,Roff,snowdepth,SWE)
  
 use CONSTANTS, only : &
   hcap_ice,          &! Specific heat capacity of ice (J/K/kg)
@@ -37,25 +36,23 @@ use PARAMETERS, only : &
   trho,              &! Snow compaction time scale (h)
   Wirr                ! Irreducible liquid water content of snow
 
+use STATE_VARIABLES, only : &
+  Ds,                &! Snow layer thicknesses (m)
+  Nsnow,             &! Number of snow layers
+  Sice,              &! Ice content of snow layers (kg/m^2)
+  Sliq,              &! Liquid content of snow layers (kg/m^2)
+  Tsnow,             &! Snow layer temperatures (K)
+  Tsoil               ! Soil layer temperatures (K)
+
 implicit none
 
 real, intent(in) :: &
-  Esurf,             &! Surface moisture flux (kg/m^2/s)
+  Esnow,             &! Snow sublimation rate (kg/m^2/s)
   Gsurf,             &! Heat flux into surface (W/m^2)
   ksnow(Nsmax),      &! Thermal conductivity of snow (W/m/K)
   ksoil(Nsoil),      &! Thermal conductivity of soil (W/m/K)
   Melt,              &! Surface melt rate (kg/m^2/s)
-  rfs,               &! Fresh snow density (kg/m^3)
-  Tsoil(Nsoil)        ! Soil layer temperatures (K)
-
-integer, intent(inout) :: &
-  Nsnow               ! Number of snow layers
-
-real, intent(inout) :: &
-  Ds(Nsmax),         &! Snow layer thicknesses (m)
-  Sice(Nsmax),       &! Ice content of snow layers (kg/m^2)
-  Sliq(Nsmax),       &! Liquid content of snow layers (kg/m^2)
-  Tsnow(Nsmax)        ! Snow layer temperatures (K)
+  rfs                 ! Fresh snow density (kg/m^3)
 
 real, intent(out) :: &
   Gsoil,             &! Heat flux into soil (W/m^2)
@@ -69,30 +66,28 @@ real :: &
   c(Nsmax),          &! Above-diagonal matrix elements
   csnow(Nsmax),      &! Areal heat capacity of snow (J/K/m^2)
   dTs(Nsmax),        &! Temperature increments (k)
-  d0(0:Nsmax),       &! Layer thickness before adjustment (m)
-  E(0:Nsmax),        &! Energy contents before adjustment (J/m^2)
+  D(Nsmax),          &! Layer thickness before adjustment (m)
+  E(Nsmax),          &! Energy contents before adjustment (J/m^2)
   Gs(Nsmax),         &! Thermal conductivity between layers (W/m^2/k)
-  newthick(Nsmax),   &! Available thickness in new layer (m)
   rhs(Nsmax),        &! Matrix equation rhs
-  S(0:Nsmax),        &! Ice contents before adjustment (kg/m^2)
+  S(Nsmax),          &! Ice contents before adjustment (kg/m^2)
   U(Nsmax),          &! Layer internal energy contents (J/m^2)
-  W(0:Nsmax)          ! Liquid contents before adjustment (kg/m^2)
+  W(Nsmax)            ! Liquid contents before adjustment (kg/m^2)
 
 real :: &
   coldcont,          &! Layer cold content (J/m^2)
-  dl,                &! Local snow depth (m)
+  dnew,              &! New snow layer thickness (m)
   dSice,             &! Change in layer ice content (kg/m^2)
-  oldthick,          &! Remaining thickness in old layer (m)
   phi,               &! Porosity
   rhos,              &! Density of snow layer (kg/m^3)
-  Sice0,             &! Ice content of fresh snow (kg/m^2)
   SliqMax,           &! Maximum liquid content for layer (kg/m^2)
   tau,               &! Snow compaction timescale (s)
-  Tsnow0,            &! Temperature of fresh snow (K)
   wt                  ! Layer weighting
 
 integer :: & 
-  k,kold,knew,kstart,&! Level pointers
+  k,                 &! Snow layer pointer
+  knew,              &! New snow layer pointer
+  kold,              &! Old snow layer pointer
   Nold                ! Previous number of snow layers
 
 Gsoil = Gsurf
@@ -163,7 +158,7 @@ if (Nsnow > 0) then   ! Existing snowpack
   end do
 
 ! Remove snow by sublimation 
-  dSice = max(Esurf, 0.)*dt
+  dSice = max(Esnow, 0.)*dt
   if (dSice > 0) then
     do k = 1, Nsnow
       if (dSice > Sice(k)) then  ! Layer sublimates completely
@@ -229,27 +224,32 @@ if (Nsnow > 0) then   ! Existing snowpack
 
 end if  ! Existing snowpack
 
-! Add snowfall and frost as layer 0
-Sice0 = Sf*dt - min(Esurf, 0.)*dt
-Tsnow0 = min(Ta, Tm)
-d0(0) = Sice0 / rfs
-E(0) = Sice0*hcap_ice*(Tsnow0 - Tm)
-S(0) = Sice0
-W(0) = 0
+! Add snowfall and frost to layer 1
+dSice = Sf*dt - min(Esnow, 0.)*dt
+Ds(1) = Ds(1) + dSice / rfs
+Sice(1) = Sice(1) + dSice
 
-! Calculate new snow depth
-snowdepth = d0(0)
+! New snowpack
+if (Nsnow == 0 .and. Sice(1) > 0) then
+  Nsnow = 1
+  Tsnow(1) = min(Ta, Tm)
+end if
+
+! Calculate snow depth and SWE
+snowdepth = 0
+SWE = 0
 do k = 1, Nsnow
   snowdepth = snowdepth + Ds(k)
+  SWE = SWE + Sice(k) + Sliq(k)
 end do
 
 ! Store state of old layers
+D(:) = Ds(:)
+S(:) = Sice(:)
+W(:) = Sliq(:)
 do k = 1, Nsnow
   csnow(k) = Sice(k)*hcap_ice + Sliq(k)*hcap_wat
-  d0(k) = Ds(k)
   E(k) = csnow(k)*(Tsnow(k) - Tm)
-  S(k) = Sice(k)
-  W(k) = Sliq(k)  
 end do
 Nold = Nsnow
 
@@ -261,60 +261,59 @@ Tsnow(:) = Tm
 U(:) = 0
 Nsnow = 0
 
-if (snowdepth > 0) then  ! Existing or new snowpack
+if (SWE > 0) then  ! Existing or new snowpack
 
 ! Re-assign and count snow layers
-  dl = snowdepth
-  Ds(1) = dl
+  dnew = snowdepth
+  Ds(1) = dnew
   k = 1
   if (Ds(1) > Dzsnow(1)) then 
     do k = 1, Nsmax
       Ds(k) = Dzsnow(k)
-      dl = dl - Dzsnow(k)
-      if (dl <= Dzsnow(k) .or. k == Nsmax) then
-        Ds(k) = Ds(k) + dl
+      dnew = dnew - Dzsnow(k)
+      if (dnew <= Dzsnow(k) .or. k == Nsmax) then
+        Ds(k) = Ds(k) + dnew
         exit
       end if
     end do
   end if
   Nsnow = k
-  newthick(:) = Ds(:)
 
 ! Fill new layers from the top downwards
   knew = 1
-  do kold = 0, Nold                     ! Loop over old layers
-    oldthick = d0(kold)
-    kstart = knew
-    do k = kstart, Nsnow                ! Loop over new layers with remaining space
-      if (oldthick > newthick(k)) then  ! New layer filled
-        oldthick = oldthick - newthick(k)  
-        if (d0(kold) > epsilon(d0)) then
-          wt =  newthick(k) / d0(kold)
-          Sice(k) = Sice(k) + S(kold)*wt  
-          Sliq(k) = Sliq(k) + W(kold)*wt
-          U(k) = U(k) + E(kold)*wt
-        endif
-        knew = k + 1                    ! Update pointer to next new layer
-      else                              ! Old layer will be exhausted by this increment
-        newthick(k) = newthick(k) - oldthick
-        wt = 1
-        if (d0(kold) > epsilon(d0)) wt = oldthick / d0(kold)
-        Sice(k) = Sice(k) + S(kold)*wt
-        Sliq(k) = Sliq(k) + W(kold)*wt
-        U(k) = U(k) + E(kold)*wt
-        exit                            ! Proceed to next old layer by exiting new layer loop
+  dnew = Ds(1)
+  do kold = 1, Nold
+    do
+      if (D(kold) < dnew) then
+! Transfer all snow from old layer and move to next old layer
+        Sice(knew) = Sice(knew) + S(kold)
+        Sliq(knew) = Sliq(knew) + W(kold)
+        U(knew) = U(knew) + E(kold)
+        dnew = dnew - D(kold)
+        exit
+      else
+! Transfer some snow from old layer and move to next new layer
+        wt = dnew / D(kold)
+        Sice(knew) = Sice(knew) + wt*S(kold) 
+        Sliq(knew) = Sliq(knew) + wt*W(kold)
+        U(knew) = U(knew) + wt*E(kold)
+        D(kold) = (1 - wt)*D(kold)
+        E(kold) = (1 - wt)*E(kold)
+        S(kold) = (1 - wt)*S(kold)
+        W(kold) = (1 - wt)*W(kold)
+        knew = knew + 1
+        if (knew > Nsnow) exit
+        dnew = Ds(knew)
       end if
-    end do                              ! New layers
-  end do                                ! Old layers
+    end do
+  end do
+
+! Diagnose snow layer temperatures
+  do k = 1, Nsnow
+    csnow(k) = Sice(k)*hcap_ice + Sliq(k)*hcap_wat
+    if (csnow(k) > epsilon(csnow)) Tsnow(k) = Tm + U(k) / csnow(k)
+  end do
 
 end if  ! Existing or new snowpack
-
-! Diagnose snow layer temperatures and bulk SWE
-SWE = 0
-do k = 1, Nsnow
- csnow(k) = Sice(k)*hcap_ice + Sliq(k)*hcap_wat
- if (csnow(k) > epsilon(csnow)) Tsnow(k) = Tm + U(k) / csnow(k)
- SWE = SWE + Sice(k) + Sliq(k)
-end do
 
 end subroutine SNOW

@@ -1,7 +1,7 @@
 !-----------------------------------------------------------------------
 ! Surface exchange coefficients
 !-----------------------------------------------------------------------
-subroutine SURF_EXCH(snowdepth,Tsurf,z0,CH)
+subroutine SURF_EXCH(z0,CH)
 
 use CONSTANTS, only : &
   g,                 &! Acceleration due to gravity (m/s^2)
@@ -17,14 +17,17 @@ use DRIVING, only : &
 use MODELS, only: &
   em                  ! Surface exchange model   0 - fixed
                       !                          1 - stability correction
+
 use PARAMETERS, only : &
   bstb                ! Stability slope parameter
+
+use STATE_VARIABLES, only : &
+  Ds,                &! Snow layer thicknesses (m)
+  Tsurf               ! Surface skin temperature (K)
 
 implicit none
 
 real, intent(in) :: &
-  snowdepth,         &! Snow depth (m)
-  Tsurf,             &! Surface temperature (K)
   z0                  ! Roughness length for momentum (m)
 
 real, intent(out) :: &
@@ -39,7 +42,7 @@ real :: &
 
 zTs = zT
 if (zvar) then
-  zTs = zT - snowdepth
+  zTs = zT - sum(Ds)
   zTs = max(zTs, 1.)
 end if
 

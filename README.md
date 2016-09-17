@@ -1,10 +1,10 @@
 # FSM
 
-The Factorial Snow Model (FSM) is a multi-physics energy balance model of accumulation and melt of snow on the ground. The model includes 5 parameterizations that can be switched on or off independently, giving 32 possible model configurations identified by decimal numbers between 0 and 31. The corresponding 5 digit binary number n<sub>a</sub>n<sub>c</sub>n<sub>d</sub>n<sub>e</sub>n<sub>w</sub> has digits n<sub>a</sub> for prognostic snow albedo, n<sub>c</sub> for variable thermal conductivity, n<sub>d</sub> for prognostic snow density, n<sub>e</sub> for stability adjustment of the turbulent exchange coefficient and n<sub>w</sub> for prognostic liquid water content; the digits are 0 if a parametrization is switched off and 1 if it is switched. FSM uses a four-layer soil model and one snow layer for snow depths up to 0.2 m, two layers for depths up to 0.5 m and three layers for greater depths. A full description is given by [Essery (2015)](#Essery).
+The Factorial Snow Model (FSM) is a multi-physics energy balance model of accumulation and melt of snow on the ground. The model includes 5 parameterizations that can be switched on or off independently, giving 32 possible model configurations identified by decimal numbers between 0 and 31. The corresponding 5 digit binary number n<sub>a</sub>n<sub>c</sub>n<sub>d</sub>n<sub>e</sub>n<sub>w</sub> has digits n<sub>a</sub> for prognostic snow albedo, n<sub>c</sub> for variable thermal conductivity, n<sub>d</sub> for prognostic snow density, n<sub>e</sub> for stability adjustment of the turbulent exchange coefficient and n<sub>w</sub> for prognostic liquid water content; the digits are 0 if a parametrization is switched off and 1 if it is switched on. FSM uses a four-layer soil model extending to 1.5 m depth and one snow layer for snow depths up to 0.2 m, two layers for depths up to 0.5 m and three layers for greater depths. A full description is given by [Essery (2015)](#Essery).
 
 ## Building the model
 
-FSM is coded in Fortran. A linux executable `FSM` or a Windows executable `FSM.exe` are produced by running the script `compil.sh` or the batch file `compil.bat`. Both use the [gfortran](https://gcc.gnu.org/wiki/GFortran) compiler but could be edited to use other compilers. The `bin` directory holds precompiled executables.
+FSM is coded in Fortran. A linux executable `FSM` or a Windows executable `FSM.exe` is produced by running the script `compil.sh` or the batch file `compil.bat`. Both use the [gfortran](https://gcc.gnu.org/wiki/GFortran) compiler but could be edited to use other compilers. The `bin` directory holds precompiled executables.
 
 ## Running the model
 
@@ -63,7 +63,7 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 | zU       | 10        | m       | Wind speed measurement height  |
 | zvar     | .TRUE.    | logical | Subtract snow depth from measurement height? |
 
-Switch `zvar` is provided because the temperature and relative humidity sensors at Col de Porte are moved during site visits to maintain a constant height above the snow surface.
+Switch `zvar` is provided because the temperature and relative humidity sensors at Col de Porte are moved during site visits to maintain a constant height above the snow surface (`zvar = .FALSE.`). This will not be the case at sites that are not regularly attended.
 
 ### Parameter namelist 
 
@@ -98,21 +98,38 @@ Switch `zvar` is provided because the temperature and relative humidity sensors 
 
 `&initial`
 
-| Variable | Default | Units | Description |
-|----------|---------|-------|-------------|
-| fsat     | 4 * 0.5 | -     | Initial moisture content of soil layers as fractions of saturation |
-| Tsoil    | 4 * 285 | K     | Initial temperature of soil layers |
+| Variable   | Default | Units  | Description |
+|------------|---------|--------|-------------|
+| start_file | 'none'  | string | Start file  |
+| fsat       | 4 * 0.5 | -      | Initial moisture content of soil layers as fractions of saturation |
+| Tsoil      | 4 * 285 | K      | Initial temperature of soil layers |
 
-FSM is initialized in a snow-free state.
+Soil temperature and moisture content are taken from the namelist and FSM is initialized in a snow-free state by default. If a start file is named, it should be a text file containing initial values for each of the state variables in order:
+
+| Variable    |  Units             | Description |
+|-------------|--------------------|-------------|
+|  albs       |  -                 | Snow albedo |
+|  Ds(1:3)    |  m                 | Snow layer thicknesses                   | 
+|  Mf(1:4)    |  kg m<sup>-2</sup> | Frozen moisture content of soil layers   |
+|  Mu(1:4)    |  kg m<sup>-2</sup> | Unfrozen moisture content of soil layers |
+|  Nsnow      |  -                 | Number of snow layers         | 
+|  Sice(1:3)  |  kg m<sup>-2</sup> | Ice content of snow layers    |
+|  Sliq(1:3)  |  kg m<sup>-2</sup> | Liquid content of snow layers |
+|  Tsnow(1:3) |  K                 | Snow layer temperatures       | 
+|  Tsoil(1:4) |  K                 | Soil layer temperatures       |
+|  Tsurf      |  K                 | Surface skin temperature      |
+
+Snow and soil layers are numbered from the top downwards. File `data/dump.txt` is an example of a dump file produced at the end of a run which can be used to restart the model.
 
 ### Output namelist 
 
 `&outputs`
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| Nave     | 24        | Number of timesteps in averaged outputs |
-| out_file | 'out.txt' | Output file name |
+| Variable  | Default    | Description |
+|-----------|------------|-------------|
+| Nave      | 24         | Number of timesteps in averaged outputs |
+| out_file  | 'out.txt'  | Output file name |
+| dump_file | 'dump.txt' | Dump file name   |
 
 At present a simple fixed output format is used. The output text file has 10 columns:
 
@@ -129,7 +146,10 @@ At present a simple fixed output format is used. The output text file has 10 col
 | Tsf      | &deg;C | Average surface temperature              |
 | Tsl      | &deg;C | Average soil temperature at 20 cm depth  |
 
-Example file `data/obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
+Example file `data/out_CdP_0506.txt` contains output from a run of configuration
+`data/obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
+
+At the end of a run, the state variables are written to a dump file with the same format as the start file.
  
 ### <a name="configs"></a> Model configurations
 
@@ -170,7 +190,7 @@ Example file `data/obs_CdP_0506.txt` contains daily observations of the same var
 
 ## References
 
-<a name="Essery"></a> Essery (2015). A Factorial Snowpack Model (FSM 1.0). *Geoscientific Model Development Discussions*, **8**, 6583-6609, [doi:10.5194/gmdd-8-6583-2015](http://www.geosci-model-dev-discuss.net/8/6583/2015/gmdd-8-6583-2015.html)
+<a name="Essery"></a> Essery (2015). A Factorial Snowpack Model (FSM 1.0). *Geoscientific Model Development*, **8**, 3867-3876, [doi:10.5194/gmd-8-3867-2015](http://www.geosci-model-dev.net/8/3867/2015/)
 
 <a name="Morin"></a> Morin et al. (2012). A 18-yr long (1993-2011) snow and meteorological dataset from a mid-altitude mountain site (Col de Porte, France, 1325 m alt.) for driving and evaluating snowpack models. *Earth System Science Data*, **4**(1), 13-21, [doi:10.5194/essd-4-13-2012](http://www.earth-syst-sci-data.net/4/13/2012/essd-4-13-2012.html)
 

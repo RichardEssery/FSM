@@ -1,8 +1,7 @@
 !-----------------------------------------------------------------------
 ! Surface, surface layer and soil properties
 !-----------------------------------------------------------------------
-subroutine SURF_PROPS(Nsnow,Ds,Mf,Mu,Sice,Sliq,snowdepth,Tsnow,Tsoil,Tsurf, &
-                      albs,alb,csoil,Dz1,gs,ksnow,ksoil,ksurf,rfs,Ts1,z0)
+subroutine SURF_PROPS(alb,csoil,Dz1,gs,ksnow,ksoil,ksurf,rfs,Ts1,z0)
 
 use CONSTANTS, only : &
   g,                 &! Acceleration due to gravity (m/s^2)
@@ -56,27 +55,22 @@ use SOIL_PARAMS, only : &
   hcap_soil,         &! Volumetric heat capacity of dry soil (J/K/m^3)
   hcon_soil,         &! Thermal conductivity of dry soil (W/m/K)
   sathh,             &! Saturated soil water pressure (m)
-  Vcrit,             &! Volumetric soil moisture concentration at critical point
-  Vsat                ! Volumetric soil moisture concentration at saturation
+  Vcrit,             &! Volumetric soil moisture content at critical point
+  Vsat                ! Volumetric soil moisture content at saturation
 
-implicit none
-
-integer, intent(in) :: &
-  Nsnow               ! Number of snow layers
-
-real, intent(in) :: &
-  Ds(Nsmax),         &! Snow layer thicknesses (m)
-  Mf(Nsoil),         &! Frozen moisture content of soil layers (kg/m^2)
-  Mu(Nsoil),         &! Unfrozen moisture content of soil layers (kg/m^2)
-  Sice(Nsmax),       &! Ice content of snow layers (kg/m^2)
-  Sliq(Nsmax),       &! Liquid content of snow layers (kg/m^2)
-  snowdepth,         &! Snow depth (m)
-  Tsnow(Nsmax),      &! Snow layer temperatures (K)
-  Tsoil(Nsoil),      &! Soil layer temperatures (K)
+use STATE_VARIABLES, only : &
+  albs,              &! Snow albedo
+  Ds,                &! Snow layer thicknesses (m)
+  Mf,                &! Frozen moisture content of soil layers (kg/m^2)
+  Mu,                &! Unfrozen moisture content of soil layers (kg/m^2) 
+  Nsnow,             &! Number of snow layers
+  Sice,              &! Ice content of snow layers (kg/m^2)
+  Sliq,              &! Liquid content of snow layers (kg/m^2)
+  Tsnow,             &! Snow layer temperatures (K)
+  Tsoil,             &! Soil layer temperatures (K)
   Tsurf               ! Surface skin temperature (K)
 
-real, intent(inout) :: &
-  albs                ! Snow albedo
+implicit none
 
 real, intent(out) :: &
   alb,               &! Albedo
@@ -96,16 +90,19 @@ integer :: &
 real :: &
   alim,              &! Limiting albedo
   dPsidT,            &! Rate of change of ice potential with temperature (m/K)
-  dthudT,            &! Rate of change of unfrozen moisture concentration with temperature (1/K)
+  dthudT,            &! Rate of change of unfrozen soil moisture content with temperature (1/K)
   fsnow,             &! Snow cover fraction
   hcon_sat,          &! Thermal conductivity of saturated soil (W/m/K)
   rhos,              &! Snow density (kg/m^3)
   rt,                &! Reciprocal timescale for albedo adjustment (1/s)
-  Smf,               &! Fractional frozen soil moisture concentration
-  Smu,               &! Fractional unfrozen soil moisture concentration
+  Smf,               &! Fractional frozen soil moisture content
+  Smu,               &! Fractional unfrozen soil moisture content
+  snowdepth,         &! Snow depth (m)
+  sthf,              &! Frozen soil moisture content
+  sthu,              &! Unfrozen soil moisure content
   tau,               &! Snow albedo decay timescale (s)
   Tc,                &! Soil temperature (C)
-  theta,             &! Total soil moisture concentration
+  theta,             &! Volumetric soil moisture content
   thice,             &! Soil ice saturation at current liquid / ice ratio
   thwat,             &! Soil water saturation at current liquid / ice ratio
   Tmax                ! Maximum temperature for frozen soil moisture (K)
@@ -121,8 +118,8 @@ case(1)  ! Prognostic snow albedo
   alim = (asmn/tau + Sf*asmx/Salb)/rt
   albs = alim + (albs - alim)*exp(-rt*dt)
 end select
-if (albs > asmx) albs = asmx
-if (albs < asmn) albs = asmn
+if (albs < min(asmx, asmn)) albs = min(asmx, asmn)
+if (albs > max(asmx, asmn)) albs = max(asmx, asmn)
 
 ! Density of fresh snow
 rfs = rho0
@@ -139,6 +136,10 @@ if (cm == 1) then  ! Density function
 end if
 
 ! Partial snow cover
+snowdepth = 0
+do k = 1, Nsnow
+  snowdepth = snowdepth + Ds(k)
+end do
 fsnow = tanh(snowdepth/hfsn)
 alb = fsnow*albs + (1 - fsnow)*alb0
 z0 = (z0sn**fsnow) * (z0sf**(1 - fsnow))
@@ -150,22 +151,31 @@ do k = 1, Nsoil
   ksoil(k) = hcon_soil
   theta = (Mu(k) + Mf(k)) / (rho_wat*Dzsoil(k))
   if (theta > epsilon(theta)) then
-    Tc = Tsoil(k) - Tm
     dthudT = 0
+    sthu = theta
+    sthf = 0
+    Tc = Tsoil(k) - Tm
     Tmax = Tm + (sathh/dPsidT)*(Vsat/theta)**b
-    if (Tsoil(k) < Tmax) dthudT = (-dPsidT*Vsat/(b*sathh)) *  &
-                                  (dPsidT*Tc/sathh)**(-1/b - 1)
+    if (Tsoil(k) < Tmax) then
+      dthudT = (-dPsidT*Vsat/(b*sathh)) *  &
+               (dPsidT*Tc/sathh)**(-1/b - 1)
+      sthu = Vsat*(dPsidT*Tc/sathh)**(-1/b)
+      sthu = min(sthu, theta)
+      sthf = (theta - sthu)*rho_wat/rho_ice
+    end if
+    Mf(k) = rho_ice*Dzsoil(k)*sthf
+    Mu(k) = rho_wat*Dzsoil(k)*sthu
     csoil(k) = hcap_soil*Dzsoil(k) + hcap_ice*Mf(k) + hcap_wat*Mu(k)  &
                + rho_wat*Dzsoil(k)*((hcap_wat - hcap_ice)*Tc + Lf)*dthudT
-    Smf = Mf(k) / (rho_wat*Dzsoil(k)*Vsat)
-    Smu = Mu(k) / (rho_wat*Dzsoil(k)*Vsat)
-    if (k == 1) gs = gsat*(Smu*Vsat/Vcrit)**2
+    Smf = rho_ice*sthf/(rho_wat*Vsat)
+    Smu = sthu/Vsat
     thice = 0
-    if (Smf > 0) thice = Vsat*Smf / (Smu + Smf) 
+    if (Smf > 0) thice = Vsat*Smf/(Smu + Smf) 
     thwat = 0
-    if (Smu > 0) thwat = Vsat*Smu / (Smu + Smf)
-    hcon_sat = hcon_soil*(hcon_wat**thwat)*(hcon_ice**thice) / (hcon_air**Vsat)
+    if (Smu > 0) thwat = Vsat*Smu/(Smu + Smf)
+    hcon_sat = hcon_soil*(hcon_wat**thwat)*(hcon_ice**thice)/(hcon_air**Vsat)
     ksoil(k) = (hcon_sat - hcon_soil)*(Smf + Smu) + hcon_soil
+    if (k == 1) gs = gsat*max((Smu*Vsat/Vcrit)**2, 1.)
   end if
 end do
 

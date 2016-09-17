@@ -4,9 +4,6 @@
 subroutine INITIALIZE
 
 use CONSTANTS, only : &
-  g,                 &! Acceleration due to gravity (m/s^2)
-  Lf,                &! Latent heat of fusion (J/kg)
-  rho_ice,           &! Density of ice (kg/m^3)
   rho_wat,           &! Density of water (kg/m^3)
   Tm                  ! Melting point (K)
 
@@ -21,12 +18,12 @@ use GRID, only : &
   Dzsoil              ! Soil layer thicknesses (m)
 
 use IOUNITS, only : &
-  uout                ! Output file unit number
+  udmp,              &! Dump file unit number
+  uout,              &! Output file unit number
+  ustr                ! Start file unit number
 
 use SOIL_PARAMS, only : &
-  b,                 &! Clapp-Hornberger exponent
-  sathh,             &! Saturated soil water pressure (m)
-  Vsat                ! Soil moisture concentration at saturation
+  Vsat                ! Volumetric soil moisture content at saturation
 
 use STATE_VARIABLES, only : &
   albs,              &! Snow albedo
@@ -36,8 +33,6 @@ use STATE_VARIABLES, only : &
   Nsnow,             &! Number of snow layers 
   Sice,              &! Ice content of snow layers (kg/m^2)
   Sliq,              &! Liquid content of snow layers (kg/m^2)
-  snowdepth,         &! Snow depth (m)
-  SWE,               &! Snow water equivalent (kg/m^2) 
   Tsnow,             &! Snow layer temperatures (K)
   Tsoil,             &! Soil layer temperatures (K)
   Tsurf               ! Surface skin temperature (K)
@@ -45,28 +40,26 @@ use STATE_VARIABLES, only : &
 implicit none
 
 character(len=70) :: &
-  out_file            ! Output file name
+  dump_file,         &! Dump file name
+  out_file,          &! Output file name
+  start_file          ! Start file name
 
 integer :: &
   k                   ! Level counter
 
 real :: &
-  dPsidT,            &! Rate of change of ice potential with temperature (m/K)
-  sthf,              &! Frozen soil moisture concentration
-  sthu,              &! Unfrozen soil moisure concentration
-  Tmax                ! Maximum temperature for any frozen moisture (K)
+  fsat(Nsoil)         ! Initial moisture content of soil layers as fractions of saturation
 
-real :: &
-  fsat(Nsoil),       &! Initial moisture content of soil layers as fractions of saturation
-  theta(Nsoil)        ! Total soil moisture concentration
-
-namelist /initial/ fsat,Tsoil
-namelist /outputs/ Nave,out_file
+namelist /initial/ fsat,Tsoil,start_file
+namelist /outputs/ Nave,dump_file,out_file
 
 ! Cumulated diagnostics
 diags(:) = 0
 SWint = 0
 SWout = 0
+
+! Set state variables if no start file is specified
+start_file = 'none'
 
 ! No snow in initial state
 albs = 0.8
@@ -74,37 +67,40 @@ Ds(:) = 0
 Nsnow = 0
 Sice(:) = 0
 Sliq(:) = 0
-snowdepth = 0
-SWE = 0
 Tsnow(:) = Tm
 
 ! Initial soil profiles from namelist
 fsat(:) = 0.5
 Tsoil(:) = 285.
-read(5,initial)
+read(5, initial)
 Tsurf = Tsoil(1)
-dPsidT = - rho_ice*Lf/(rho_wat*g*Tm)
 do k = 1, Nsoil
-  theta(k) = fsat(k)*Vsat
-  Tmax = 0
-  if (theta(k) > epsilon(theta))  &
-    Tmax = Tm + (sathh/dPsidT)*(Vsat/theta(k))**b
-  if (Tsoil(k) > Tmax) then
-    sthu = theta(k)
-    sthf = 0
-  else
-    sthu = Vsat*(dPsidT*(Tsoil(k) - Tm)/sathh)**(-1/b)
-    sthu = min(sthu, theta(k))
-    sthf = (theta(k) - sthu)*rho_wat/rho_ice
-  end if
-  Mf(k) = rho_ice*Dzsoil(k)*sthf
-  Mu(k) = rho_wat*Dzsoil(k)*sthu
+  Mf(k) = 0
+  Mu(k) = rho_wat*Dzsoil(k)*fsat(k)*Vsat
 end do
+
+! Initialize state variables from a named start file
+if (start_file /= 'none') then
+  open(ustr, file = start_file)
+  read(ustr,*) albs
+  read(ustr,*) Ds(:)
+  read(ustr,*) Mf(:)
+  read(ustr,*) Mu(:)
+  read(ustr,*) Nsnow
+  read(ustr,*) Sice(:)
+  read(ustr,*) Sliq(:)
+  read(ustr,*) Tsnow(:)
+  read(ustr,*) Tsoil(:)
+  read(ustr,*) Tsurf
+  close(ustr)
+end if
 
 ! Output options
 Nave = 24
 out_file = 'out.txt'
-read(5,outputs)
+dump_file = 'dump.txt'
+read(5, outputs)
 open(uout, file = out_file)
+open(udmp, file = dump_file)
 
 end subroutine INITIALIZE

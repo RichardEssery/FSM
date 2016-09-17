@@ -3,7 +3,7 @@
 !-----------------------------------------------------------------------
 module CONSTANTS
 real, parameter :: &
-  cp = 1005,         &! Specific heat of dry air at constant pressure (J/K/kg)
+  cp = 1005,         &! Specific heat capacity of dry air (J/K/kg)
   eps = 0.622,       &! Ratio of molecular weights of water and dry air
   e0 = 611.213,      &! Saturation vapour pressure at Tm (Pa)
   g = 9.81,          &! Acceleration due to gravity (m/s^2)
@@ -19,6 +19,7 @@ real, parameter :: &
   Ls = Lc + Lf,      &! Latent heat of sublimation (J/kg)
   R = 8.3145,        &! Universal gas constant (J/K/mol) 
   Rgas = 287,        &! Gas constant for dry air (J/K/kg)
+  Rwat = 462,        &! Gas constant for water vapour (J/K/kg)
   rho_ice = 917.,    &! Density of ice (kg/m^3)
   rho_wat = 1000.,   &! Density of water (kg/m^3)
   sb = 5.67e-8,      &! Stefan-Boltzmann constant (W/m^2/K^4)
@@ -83,8 +84,10 @@ end module GRID
 !-----------------------------------------------------------------------
 module IOUNITS
 integer, parameter :: &
-  umet = 11,         &! Driving file unit number
-  uout = 31           ! Output file unit number
+  udmp = 11,         &! Dump file unit number
+  umet = 21,         &! Driving file unit number
+  uout = 31,         &! Output file unit number
+  ustr = 41           ! Start file unit number
 end module IOUNITS
 
 !-----------------------------------------------------------------------
@@ -167,8 +170,6 @@ real :: &
   Ds(Nsmax),         &! Snow layer thicknesses (m)
   Sice(Nsmax),       &! Ice content of snow layers (kg/m^2)
   Sliq(Nsmax),       &! Liquid content of snow layers (kg/m^2)
-  snowdepth,         &! Snow depth (m)
-  SWE,               &! Snow water equivalent (kg/m^2)
   Tsnow(Nsmax)        ! Snow layer temperatures (K)
 ! Soil state variables
 real :: &

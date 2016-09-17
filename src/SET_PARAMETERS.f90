@@ -77,7 +77,7 @@ namelist /drive/ met_file,dt,zT,zU,zvar
 namelist /params/ alb0,asmx,asmn,bstb,bthr,fcly,fsnd,gsat,hfsn,kfix,rho0,  &
                   rhof,rcld,rmlt,Salb,Talb,tcld,tmlt,trho,Wirr,z0sf,z0sn
 
-! Read configuration number and set model swithches
+! Read configuration number and set model switches
 nconfig = 31
 read(5,config)
 am = mod(nconfig/16,2)

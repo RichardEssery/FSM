@@ -102,7 +102,7 @@ Switch `zvar` is provided because the temperature and relative humidity sensors 
 |------------|---------|--------|-------------|
 | start_file | 'none'  | string | Start file  |
 | fsat       | 4 * 0.5 | -      | Initial moisture content of soil layers as fractions of saturation |
-| Tsoil      | 4 * 285 | K      | Initial temperature of soil layers |
+| Tsoil      | 4 * 285 | K      | Initial temperatures of soil layers |
 
 Soil temperature and moisture content are taken from the namelist and FSM is initialized in a snow-free state by default. If a start file is named, it should be a text file containing initial values for each of the state variables in order:
 
@@ -118,7 +118,7 @@ Soil temperature and moisture content are taken from the namelist and FSM is ini
 |  Tsoil(1:4) |  K                 | Soil layer temperatures       |
 |  Tsurf      |  K                 | Surface skin temperature      |
 
-Snow and soil layers are numbered from the top downwards. File `data/dump.txt` is an example of a dump file produced at the end of a run which can be used to restart the model.
+Snow and soil layers are numbered from the top downwards. File `data/dump.txt` is an example of a dump file produced at the end of a run which could be used to restart the model.
 
 ### Output namelist 
 
@@ -145,8 +145,7 @@ At present a simple fixed output format is used. The output text file has 10 col
 | Tsf      | &deg;C | Average surface temperature              |
 | Tsl      | &deg;C | Average soil temperature at 20 cm depth  |
 
-Example file `data/out_CdP_0506.txt` contains output from a run of configuration
-`data/obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
+Example file `data/out_CdP_0506.txt` contains output from a run of FSM configuration 31; `data/obs_CdP_0506.txt` contains daily observations of the same variables, with -99 indicating missing data.
 
 At the end of a run, the state variables are written to a dump file with the same format as the start file.
  

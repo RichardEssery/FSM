@@ -61,11 +61,10 @@ use SOIL_PARAMS, only : &
 use STATE_VARIABLES, only : &
   albs,              &! Snow albedo
   Ds,                &! Snow layer thicknesses (m)
-  Mf,                &! Frozen moisture content of soil layers (kg/m^2)
-  Mu,                &! Unfrozen moisture content of soil layers (kg/m^2) 
   Nsnow,             &! Number of snow layers
   Sice,              &! Ice content of snow layers (kg/m^2)
   Sliq,              &! Liquid content of snow layers (kg/m^2)
+  theta,             &! Volumetric moisture content of soil layers
   Tsnow,             &! Snow layer temperatures (K)
   Tsoil,             &! Soil layer temperatures (K)
   Tsurf               ! Surface skin temperature (K)
@@ -93,6 +92,8 @@ real :: &
   dthudT,            &! Rate of change of unfrozen soil moisture content with temperature (1/K)
   fsnow,             &! Snow cover fraction
   hcon_sat,          &! Thermal conductivity of saturated soil (W/m/K)
+  Mf,                &! Frozen moisture content of soil (kg/m^2)
+  Mu,                &! Unfrozen moisture content of soil (kg/m^2) 
   rhos,              &! Snow density (kg/m^3)
   rt,                &! Reciprocal timescale for albedo adjustment (1/s)
   Smf,               &! Fractional frozen soil moisture content
@@ -102,7 +103,6 @@ real :: &
   sthu,              &! Unfrozen soil moisure content
   tau,               &! Snow albedo decay timescale (s)
   Tc,                &! Soil temperature (C)
-  theta,             &! Volumetric soil moisture content
   thice,             &! Soil ice saturation at current liquid / ice ratio
   thwat,             &! Soil water saturation at current liquid / ice ratio
   Tmax                ! Maximum temperature for frozen soil moisture (K)
@@ -136,10 +136,7 @@ if (cm == 1) then  ! Density function
 end if
 
 ! Partial snow cover
-snowdepth = 0
-do k = 1, Nsnow
-  snowdepth = snowdepth + Ds(k)
-end do
+snowdepth = sum(Ds)
 fsnow = tanh(snowdepth/hfsn)
 alb = fsnow*albs + (1 - fsnow)*alb0
 z0 = (z0sn**fsnow) * (z0sf**(1 - fsnow))
@@ -149,23 +146,22 @@ dPsidT = - rho_ice*Lf/(rho_wat*g*Tm)
 do k = 1, Nsoil
   csoil(k) = hcap_soil*Dzsoil(k)
   ksoil(k) = hcon_soil
-  theta = (Mu(k) + Mf(k)) / (rho_wat*Dzsoil(k))
-  if (theta > epsilon(theta)) then
+  if (theta(k) > epsilon(theta)) then
     dthudT = 0
-    sthu = theta
+    sthu = theta(k)
     sthf = 0
     Tc = Tsoil(k) - Tm
-    Tmax = Tm + (sathh/dPsidT)*(Vsat/theta)**b
+    Tmax = Tm + (sathh/dPsidT)*(Vsat/theta(k))**b
     if (Tsoil(k) < Tmax) then
       dthudT = (-dPsidT*Vsat/(b*sathh)) *  &
                (dPsidT*Tc/sathh)**(-1/b - 1)
       sthu = Vsat*(dPsidT*Tc/sathh)**(-1/b)
-      sthu = min(sthu, theta)
-      sthf = (theta - sthu)*rho_wat/rho_ice
+      sthu = min(sthu, theta(k))
+      sthf = (theta(k) - sthu)*rho_wat/rho_ice
     end if
-    Mf(k) = rho_ice*Dzsoil(k)*sthf
-    Mu(k) = rho_wat*Dzsoil(k)*sthu
-    csoil(k) = hcap_soil*Dzsoil(k) + hcap_ice*Mf(k) + hcap_wat*Mu(k)  &
+    Mf = rho_ice*Dzsoil(k)*sthf
+    Mu = rho_wat*Dzsoil(k)*sthu
+    csoil(k) = hcap_soil*Dzsoil(k) + hcap_ice*Mf + hcap_wat*Mu  &
                + rho_wat*Dzsoil(k)*((hcap_wat - hcap_ice)*Tc + Lf)*dthudT
     Smf = rho_ice*sthf/(rho_wat*Vsat)
     Smu = sthu/Vsat

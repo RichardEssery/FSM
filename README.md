@@ -1,6 +1,6 @@
 # FSM
 
-The Factorial Snow Model (FSM) is a multi-physics energy balance model of accumulation and melt of snow on the ground. The model includes 5 parameterizations that can be switched on or off independently, giving 32 possible model configurations identified by decimal numbers between 0 and 31. The corresponding 5 digit binary number n<sub>a</sub>n<sub>c</sub>n<sub>d</sub>n<sub>e</sub>n<sub>w</sub> has digits n<sub>a</sub> for prognostic snow albedo, n<sub>c</sub> for variable thermal conductivity, n<sub>d</sub> for prognostic snow density, n<sub>e</sub> for stability adjustment of the turbulent exchange coefficient and n<sub>w</sub> for prognostic liquid water content; the digits are 0 if a parametrization is switched off and 1 if it is switched on. FSM uses a four-layer soil model extending to 1.5 m depth and one snow layer for snow depths up to 0.2 m, two layers for depths up to 0.5 m and three layers for greater depths. A full description is given by [Essery (2015)](#Essery).
+The Factorial Snow Model (FSM) is a multi-physics energy balance model of accumulation and melt of snow on the ground. The model includes 5 parameterizations that can be switched on or off independently, giving 32 possible model configurations identified by decimal numbers between 0 and 31. The corresponding 5 digit binary number n<sub>a</sub>n<sub>c</sub>n<sub>d</sub>n<sub>e</sub>n<sub>w</sub> has digits n<sub>a</sub> for prognostic snow albedo, n<sub>c</sub> for variable thermal conductivity, n<sub>d</sub> for prognostic snow density, n<sub>e</sub> for stability adjustment of the turbulent exchange coefficient and n<sub>w</sub> for prognostic liquid water content; the digits are 0 if a parametrization is switched off and 1 if it is switched on. FSM uses a four-layer soil model extending to 1.5 m depth and one snow layer for snow depths up to 0.2 m, two layers for depths up to 0.5 m or three layers for greater depths. A full description is given by [Essery (2015)](#Essery).
 
 ## Building the model
 
@@ -74,25 +74,25 @@ Switch `zvar` is provided because the temperature and relative humidity sensors 
 | alb0 | 0.2  | -    | Snow-free ground albedo                                         |
 | asmx | 0.8  | -    | Maximum albedo for fresh snow                                   |
 | asmn | 0.5  | -    | Minimum albedo for melting snow                                 |
-| bstb | 5    | -    | Atmospheric stability adjustment parameter (n<sub>e</sub>=1)    |                                  
-| bthr | 2    | -    | Thermal conductivity exponent (n<sub>c</sub>=1)                 |
+| bstb | 5    | -    | Atmospheric stability adjustment parameter (if n<sub>e</sub>=1) |                                  
+| bthr | 2    | -    | Thermal conductivity exponent (if n<sub>c</sub>=1)              |
 | fcly | 0.3  | -    | Soil clay fraction                                              |
 | fsnd | 0.6  | -    | Soil sand fraction                                              |
 | gsat | 0.01 | m s<sup>-1</sup>  | Surface conductance for saturated soil             |
 | hfsn | 0.1  | m    | Snow cover fraction depth scale                                 |
-| kfix | 0.24 | W m<sup>-1</sup> K<sup>-1</sup> | Fixed thermal conductivity (n<sub>c</sub>=0) |
-| rho0 | 300  | kg m<sup>-3</sup> | Fixed snow density (n<sub>d</sub>=0)               |
-| rhof | 100  | kg m<sup>-3</sup> | Fresh snow density (n<sub>d</sub>=1)               |
-| rcld | 300  | kg m<sup>-3</sup> | Maximum density for cold snow (n<sub>d</sub>=1)    |
-| rmlt | 500  | kg m<sup>-3</sup> | Maximum density for melting snow (n<sub>d</sub>=1) |
-| Salb | 10   | kg m<sup>-2</sup> | Snowfall to refresh albedo (n<sub>a</sub>=1)       |
-| Talb | -2   | &deg;C| Albedo decay temperature threshold (n<sub>a</sub>=0)           |
-| tcld | 1000 | h    | Cold snow albedo decay timescale (n<sub>a</sub>=1)              |
-| tmlt | 100  | h    | Melting snow albedo decay timescale (n<sub>a</sub>=1)           |
-| trho | 200  | h    | Compaction time scale (n<sub>d</sub>=1)                         |
-| Wirr | 0.03 | -    | Irreducible liquid water content (n<sub>w</sub>=1)              |
-| z0sf | 0.1  | m    | Snow-free roughness length                                      |
-| z0sn | 0.01 | m    | Snow roughness length                                           |
+| kfix | 0.24 | W m<sup>-1</sup> K<sup>-1</sup> | Fixed thermal conductivity (if n<sub>c</sub>=0) |
+| rho0 | 300  | kg m<sup>-3</sup> | Fixed snow density (if n<sub>d</sub>=0)               |
+| rhof | 100  | kg m<sup>-3</sup> | Fresh snow density (if n<sub>d</sub>=1)               |
+| rcld | 300  | kg m<sup>-3</sup> | Maximum density for cold snow (if n<sub>d</sub>=1)    |
+| rmlt | 500  | kg m<sup>-3</sup> | Maximum density for melting snow (if n<sub>d</sub>=1) |
+| Salb | 10   | kg m<sup>-2</sup> | Snowfall to refresh albedo (if n<sub>a</sub>=1)       |
+| Talb | -2   | &deg;C| Albedo decay temperature threshold (if n<sub>a</sub>=0)           |
+| tcld | 1000 | h    | Cold snow albedo decay timescale (if n<sub>a</sub>=1)              |
+| tmlt | 100  | h    | Melting snow albedo decay timescale (if n<sub>a</sub>=1)           |
+| trho | 200  | h    | Compaction time scale (if n<sub>d</sub>=1)                         |
+| Wirr | 0.03 | -    | Irreducible liquid water content (if n<sub>w</sub>=1)              |
+| z0sf | 0.1  | m    | Snow-free roughness length                                         |
+| z0sn | 0.01 | m    | Snow roughness length                                              |
 
 ### Initial values namelist 
 
@@ -109,12 +109,11 @@ Soil temperature and moisture content are taken from the namelist and FSM is ini
 | Variable    |  Units             | Description |
 |-------------|--------------------|-------------|
 |  albs       |  -                 | Snow albedo |
-|  Ds(1:3)    |  m                 | Snow layer thicknesses                   | 
-|  Mf(1:4)    |  kg m<sup>-2</sup> | Frozen moisture content of soil layers   |
-|  Mu(1:4)    |  kg m<sup>-2</sup> | Unfrozen moisture content of soil layers |
+|  Ds(1:3)    |  m                 | Snow layer thicknesses         
 |  Nsnow      |  -                 | Number of snow layers         | 
 |  Sice(1:3)  |  kg m<sup>-2</sup> | Ice content of snow layers    |
 |  Sliq(1:3)  |  kg m<sup>-2</sup> | Liquid content of snow layers |
+|  theta(1:4) |  -                 | Volumetric moisture content of soil layers |
 |  Tsnow(1:3) |  K                 | Snow layer temperatures       | 
 |  Tsoil(1:4) |  K                 | Soil layer temperatures       |
 |  Tsurf      |  K                 | Surface skin temperature      |

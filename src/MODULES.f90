@@ -173,7 +173,6 @@ real :: &
   Tsnow(Nsmax)        ! Snow layer temperatures (K)
 ! Soil state variables
 real :: &
-  Mf(Nsoil),         &! Frozen moisture content of soil layers (kg/m^2)
-  Mu(Nsoil),         &! Unfrozen moisture content of soil layers (kg/m^2)  
+  theta(Nsoil),      &! Volumetric moisture content of soil layers
   Tsoil(Nsoil)        ! Soil layer temperatures (K)
 end module STATE_VARIABLES

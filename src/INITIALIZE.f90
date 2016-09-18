@@ -28,11 +28,10 @@ use SOIL_PARAMS, only : &
 use STATE_VARIABLES, only : &
   albs,              &! Snow albedo
   Ds,                &! Snow layer thicknesses (m)
-  Mf,                &! Frozen moisture content of soil layers (kg/m^2)
-  Mu,                &! Unfrozen moisture content of soil layers (kg/m^2) 
   Nsnow,             &! Number of snow layers 
   Sice,              &! Ice content of snow layers (kg/m^2)
   Sliq,              &! Liquid content of snow layers (kg/m^2)
+  theta,             &! Volumetric moisture content of soil layers
   Tsnow,             &! Snow layer temperatures (K)
   Tsoil,             &! Soil layer temperatures (K)
   Tsurf               ! Surface skin temperature (K)
@@ -75,8 +74,7 @@ Tsoil(:) = 285.
 read(5, initial)
 Tsurf = Tsoil(1)
 do k = 1, Nsoil
-  Mf(k) = 0
-  Mu(k) = rho_wat*Dzsoil(k)*fsat(k)*Vsat
+  theta(k) = fsat(k)*Vsat
 end do
 
 ! Initialize state variables from a named start file
@@ -84,11 +82,10 @@ if (start_file /= 'none') then
   open(ustr, file = start_file)
   read(ustr,*) albs
   read(ustr,*) Ds(:)
-  read(ustr,*) Mf(:)
-  read(ustr,*) Mu(:)
   read(ustr,*) Nsnow
   read(ustr,*) Sice(:)
   read(ustr,*) Sliq(:)
+  read(ustr,*) theta(:)
   read(ustr,*) Tsnow(:)
   read(ustr,*) Tsoil(:)
   read(ustr,*) Tsurf

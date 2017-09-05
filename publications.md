@@ -8,4 +8,6 @@ Magnusson, J, N Wever, R Essery, N Helbig, A Winstral and T Jonas (2015). Evalua
 
 Magnusson, J, A Winstral, AS Stordal, R Essery and T Jonas (2017). Improving physically based snow simulations by assimilating snow depths using the particle filter. *Water Resources Research*, **53**, 1125-1143, [doi:10.1002/2016WR019092](http://onlinelibrary.wiley.com/doi/10.1002/2016WR019092/full).
 
+Moeser, D, G Mazzotti, N Helbig and T Jonas (2016). Representing spatial variability of forest snow: Implementation of a new interception model. *Water Resources Research*, **52**, 1208-1226, [doi:10.1002/2015WR017961](http://onlinelibrary.wiley.com/doi/10.1002/2015WR017961/full). 
+
 Sandells, M, R Essery, N Rutter, L Wake, L Leppanen, and J Lemmetyinen (2017). Microstructure representation of snow in coupled snowpack and microwave emission models. *The Cryosphere*, **11**, 229-246, [doi:10.5194/tc-11-229-2017](https://www.the-cryosphere.net/11/229/2017/).

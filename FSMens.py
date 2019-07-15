@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Run an ensemble of FSM simulations
 
@@ -22,7 +20,7 @@ except:
 
 for n in range(32):
     config = np.binary_repr(n, width=5)
-    print 'Running FSM configuration ',config,n
+    print('Running FSM configuration ',config,n)
     f = open('nlst.txt', 'w')
     out_file = 'out.txt'
     with open(namelist) as file:

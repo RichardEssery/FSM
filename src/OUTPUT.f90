@@ -6,7 +6,8 @@ subroutine OUTPUT
 use DRIVING, only: &
   year,              &! Year
   month,             &! Month of year
-  day                 ! Day of month
+  day,               &! Day of month
+  hour                ! Hour of day
 
 use IOUNITS, only : &
   uout                ! Output file unit number
@@ -31,12 +32,12 @@ end if
 ! Averages
 diags(:) = diags(:) / Nave
 
-write(uout,100) year,month,day,alb,diags(:)
+write(uout,100) year,month,day,hour,alb,diags(:)
 
 diags(:) = 0
 SWint = 0
 SWout = 0
 
-100 format(i4,2(2x,i2),6(2x,f10.3))
+100 format(i4,2(2x,i2),7(2x,f10.3))
 
 end subroutine OUTPUT

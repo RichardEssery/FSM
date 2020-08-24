@@ -4,6 +4,7 @@
 subroutine DRIVE(EoR)
 
 use DRIVING, only: &
+  SnowMIP,           &! Read driving data in ESM-SnowMIP format
   year,              &! Year
   month,             &! Month of year
   day,               &! Day of month
@@ -29,10 +30,15 @@ real :: &
   Qs,                &! Saturation specific humidity
   RH                  ! Relative humidity (%)
 
-read(umet,*,end=1) year,month,day,hour,SW,LW,Sf,Rf,Ta,RH,Ua,Ps
+if (SnowMIP) then
+  read(umet,*,end=1) year,month,day,hour,SW,LW,Rf,Sf,Ta,Qa,RH,Ua,Ps
+else
+  read(umet,*,end=1) year,month,day,hour,SW,LW,Sf,Rf,Ta,RH,Ua,Ps
+  call QSAT(.TRUE.,Ps,Ta,Qs)
+  Qa = (RH/100)*Qs
+end if
 Ua = max(Ua, 0.1)
-call QSAT(.TRUE.,Ps,Ta,Qs)
-Qa = (RH/100)*Qs
+
 return
 
 ! End of driving data file

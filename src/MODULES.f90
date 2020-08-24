@@ -48,6 +48,7 @@ integer :: &
   month,             &! Month of year
   day                 ! Day of month
 logical :: &
+  SnowMIP,           &! Read driving data in ESM-SnowMIP format
   zvar                ! Subtract snow depth from measurement height
 real :: &
   dt,                &! Timestep (s)

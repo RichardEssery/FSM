@@ -59,9 +59,12 @@ Meteorological driving data are read from a text file named in namelist `&drive`
 |----------|---------|-------|-------------|
 | met_file | 'met.txt' | string  | Driving file name |
 | dt       | 3600      | s       | Time step         |
+| SnowMIP  | .FALSE.   | logical | Read driving data in ESM-SnowMIP format |
 | zT       | 2         | m       | Temperature measurement height |
 | zU       | 10        | m       | Wind speed measurement height  |
-| zvar     | .TRUE.    | logical | Subtract snow depth from measurement height? |
+| zvar     | .TRUE.    | logical | Subtract snow depth from measurement height |
+
+`SnowMIP = .TRUE.` is required for driving data files from ESM-SnowMIP ([Krinner et al. 2018](#Krinner)). These files can be downloaded from [https://www.geos.ed.ac.uk/~ressery/ESM-SnowMIP.html](https://www.geos.ed.ac.uk/~ressery/ESM-SnowMIP.html).
 
 Switch `zvar` is provided because the temperature and relative humidity sensors at Col de Porte are moved during site visits to maintain a constant height above the snow surface (`zvar = .FALSE.`). This will not be the case at sites that are not regularly attended.
 
@@ -74,7 +77,7 @@ Switch `zvar` is provided because the temperature and relative humidity sensors 
 | alb0 | 0.2  | -    | Snow-free ground albedo                                         |
 | asmx | 0.8  | -    | Maximum albedo for fresh snow                                   |
 | asmn | 0.5  | -    | Minimum albedo for melting snow                                 |
-| bstb | 5    | -    | Atmospheric stability adjustment parameter (if n<sub>e</sub>=1) |                                  
+| bstb | 5    | -    | Atmospheric stability adjustment parameter (if n<sub>e</sub>=1) |
 | bthr | 2    | -    | Thermal conductivity exponent (if n<sub>c</sub>=1)              |
 | fcly | 0.3  | -    | Soil clay fraction                                              |
 | fsnd | 0.6  | -    | Soil sand fraction                                              |
@@ -109,7 +112,7 @@ Soil temperature and moisture content are taken from the namelist and FSM is ini
 | Variable    |  Units             | Description |
 |-------------|--------------------|-------------|
 |  albs       |  -                 | Snow albedo |
-|  Ds(1:3)    |  m                 | Snow layer thicknesses         
+|  Ds(1:3)    |  m                 | Snow layer thicknesses        |
 |  Nsnow      |  -                 | Number of snow layers         | 
 |  Sice(1:3)  |  kg m<sup>-2</sup> | Ice content of snow layers    |
 |  Sliq(1:3)  |  kg m<sup>-2</sup> | Liquid content of snow layers |
@@ -189,6 +192,8 @@ At the end of a run, the state variables are written to a dump file with the sam
 ## References
 
 <a name="Essery"></a> Essery (2015). A Factorial Snowpack Model (FSM 1.0). *Geoscientific Model Development*, **8**, 3867-3876, [doi:10.5194/gmd-8-3867-2015](http://www.geosci-model-dev.net/8/3867/2015/)
+
+<a name="Krinner"></a> Krinner et al. (2018). ESM-SnowMIP: assessing snow models and quantifying snow-related climate feedbacks. *Geoscientific Model Development*, **11**, 5027-5049, [doi:10.5194/gmd-11-5027-2018](https://gmd.copernicus.org/articles/11/5027/2018/)
 
 <a name="Morin"></a> Morin et al. (2012). A 18-yr long (1993-2011) snow and meteorological dataset from a mid-altitude mountain site (Col de Porte, France, 1325 m alt.) for driving and evaluating snowpack models. *Earth System Science Data*, **4**(1), 13-21, [doi:10.5194/essd-4-13-2012](http://www.earth-syst-sci-data.net/4/13/2012/essd-4-13-2012.html)
 

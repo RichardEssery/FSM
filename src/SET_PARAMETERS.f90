@@ -10,6 +10,7 @@ use CONSTANTS, only : &
 
 use DRIVING, only : &
   dt,                &! Timestep (s)
+  SnowMIP,           &! Read driving data in ESM-SnowMIP format
   zT,                &! Temperature measurement height (m)
   zU,                &! Wind measurement height (m)
   zvar                ! Subtract snow depth from measurement height
@@ -73,7 +74,7 @@ real :: &
   hcon_min            ! Thermal conductivity of soil minerals (W/m/K)
 
 namelist /config/ nconfig
-namelist /drive/ met_file,dt,zT,zU,zvar
+namelist /drive/ met_file,dt,SnowMIP,zT,zU,zvar
 namelist /params/ alb0,asmx,asmn,bstb,bthr,fcly,fsnd,gsat,hfsn,kfix,rho0,  &
                   rhof,rcld,rmlt,Salb,Talb,tcld,tmlt,trho,Wirr,z0sf,z0sn
 
@@ -89,6 +90,7 @@ hm = mod(nconfig,2)
 ! Driving data parameters
 met_file = 'met.txt'
 dt = 3600
+SnowMIP = .FALSE.
 zT = 2
 zU = 10
 zvar = .TRUE.

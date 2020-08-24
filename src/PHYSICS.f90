@@ -36,14 +36,23 @@ real :: &
   Esnow,             &! Snow sublimation rate (kg/m^2/s)
   Gsurf,             &! Heat flux into surface (W/m^2)
   Gsoil,             &! Heat flux into soil (W/m^2)
+  Hsurf,             &! Sensible heat flux (W/m^2)
+  LEsrf,             &! Latent heat flux (W/m^2)
   Melt,              &! Surface melt rate (kg/m^2/s)
+  Rnet,              &! Net radiation (W/m^2)
   Roff                ! Runoff from snow (kg/m^2)
+
+integer :: iter       ! Interation counter
 
 call SURF_PROPS(alb,csoil,Dz1,gs,ksnow,ksoil,ksurf,rfs,Ts1,z0)
 
+do iter = 1, 6
+
 call SURF_EXCH(z0,CH)
 
-call SURF_EBAL(alb,CH,Dz1,gs,ksurf,Ts1,Esnow,Gsurf,Melt)
+call SURF_EBAL(alb,CH,Dz1,gs,ksurf,Ts1,Esnow,Gsurf,Hsurf,LEsrf,Melt,Rnet)
+
+end do
 
 call SNOW(Esnow,Gsurf,ksnow,ksoil,Melt,rfs,Gsoil,Roff,snowdepth,SWE)
 

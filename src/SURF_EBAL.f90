@@ -1,7 +1,8 @@
 !-----------------------------------------------------------------------
 ! Solve surface energy balance
 !-----------------------------------------------------------------------
-subroutine SURF_EBAL(alb,CH,Dz1,gs,ksurf,Ts1,Esnow,Gsurf,Melt)
+subroutine SURF_EBAL(alb,CH,Dz1,gs,ksurf,Ts1,         &
+                     Esnow,Gsurf,Hsurf,LEsrf,Melt,Rnet)
 
 use CONSTANTS, only : &
   cp,                &! Specific heat capacity of dry air (J/K/kg)
@@ -41,24 +42,25 @@ real, intent(in) :: &
 real, intent(out) :: &
   Esnow,             &! Snow sublimation rate (kg/m^2/s)
   Gsurf,             &! Heat flux into surface (W/m^2)
-  Melt                ! Surface melt rate (kg/m^2/s)
+  Hsurf,             &! Sensible heat flux (W/m^2)
+  LEsrf,             &! Latent heat flux (W/m^2)
+  Melt,              &! Surface melt rate (kg/m^2/s)
+  Rnet                ! Net radiation (W/m^2)
 
 real :: &
   D,                 &! dQsat/dT (1/K)
   dE,                &! Change in surface moisture flux (kg/m^2/s)
   dG,                &! Change in surface heat flux (W/m^2)
   dH,                &! Change in sensible heat flux (W/m^2)
+  dR,                &! Change in net radiation (W/m^2)
   dTs,               &! Change in surface skin temperatures (K)
   Esurf,             &! Surface moisture flux (kg/m^2/s)
   Esoil,             &! Soil evaporation rate (kg/m^2/s)
-  Hsurf,             &! Sensible heat flux (W/m^2)
-  LEsrf,             &! Latent heat flux (W/m^2)
   Lh,                &! Latent heat (J/kg)
   psi,               &! Moisture availability factor
   Qs,                &! Saturation humidity at surface layer temperature
   rho,               &! Air density (kg/m^3)
-  rKH,               &! rho*CH*Ua (kg/m^2/s)
-  Rnet                ! Net radiation (W/m^2)
+  rKH                 ! rho*CH*Ua (kg/m^2/s)
 
 call QSAT(.FALSE.,Ps,Tsurf,Qs)
 psi = gs / (gs + CH*Ua)
@@ -81,6 +83,7 @@ dTs = (Rnet - Hsurf - LEsrf - Gsurf) / &
 dE = psi*rKH*D*dTs
 dG = 2*ksurf*dTs/Dz1
 dH = cp*rKH*dTs
+dR = -sb*Tsurf**3*dTs
 
 ! Surface melting
 if (Tsurf + dTs > Tm .and. Sice(1) > 0) then
@@ -102,6 +105,7 @@ if (Tsurf + dTs > Tm .and. Sice(1) > 0) then
       dE = 0
       dG = 0
       dH = 0
+      dR = 0
       dTs = Tm - Tsurf
   end if
 end if
@@ -111,6 +115,7 @@ Tsurf = Tsurf + dTs
 Esurf = Esurf + dE
 Gsurf = Gsurf + dG
 Hsurf = Hsurf + dH
+Rnet  = Rnet + dR
 Esnow = 0
 Esoil = 0
 if (Sice(1) > 0 .or. Tsurf < Tm) then

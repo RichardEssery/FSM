@@ -9,45 +9,57 @@ University of Edinburgh
 import os
 import sys
 
+# global config
+fsm_binary_unix = os.path.join('./FSM')
+fsm_binary_win = os.path.join('FSM.exe')
 
-def perform_fsm_routine(input_filename: str, fsm_binary: str, total_runs: int = 32):
+
+def parse_and_write_new_config(input_filename: str, run_num: int, run_id: str):
+    tmp_nlst_file = os.path.join('tmp_nlst.txt')
+    new_nlst_lines = []
+    output_file = None
+
+    # read input file and replace line with config
+    with open(input_filename) as file:
+        for line in file:
+            # replace the line with out_file with the new output filename
+            if 'out_file' in line:
+                out_file = line.rsplit()[-1].replace('\'', '')
+                out_file_parts = out_file.split('.')
+                new_out_filename = f'{"".join(out_file_parts[:-1])}_{run_id}.{out_file_parts[-1]}'
+                output_file = os.path.join('output', new_out_filename)
+                new_nlst_lines.append(f'  out_file = \'{output_file}\'\n')
+                continue
+
+            new_nlst_lines.append(line)
+            # add config line with run number
+            if 'config' in line:
+                new_nlst_lines.append(f'  nconfig = {run_num}\n')
+
+    if output_file is None:
+        raise Exception('No line with out_file was found in input file')
+
+    # write new nlst.txt file with config for n
+    with open(tmp_nlst_file, 'w') as file:
+        for line in new_nlst_lines:
+            file.write(line)
+
+    return tmp_nlst_file, output_file
+
+
+def perform_fsm_routine(input_filename: str, fsm_binary: str, total_runs: int = 64):
     print(f"Performing routing with input namelist {input_filename}")
 
-    nlst_filename = os.path.join('nlst.txt')
-
     for n in range(total_runs):
-        n_binary = "{0:b}".format(n)
-        print(f'Running FSM configuration {n_binary} {n}')
+        run_id = "{0:05b}".format(n)
+        print(f'Running FSM configuration {run_id} {n}')
 
-        new_nlst = []
-        out_file = os.path.join('out.txt')
-
-        # read input file and replace line with config
-        with open(input_filename) as file:
-            for line in file:
-                new_nlst.append(line)
-                if 'config' in line:
-                    new_nlst.append(f'  nconfig = {n}\n')
-
-                # the line with out_file includes the filename that FSM will use for output
-                if 'out_file' in line:
-                    out_file = line.rsplit()[-1]
-                    out_file = out_file.replace('\'', '')
-                    out_file = os.path.join(out_file)
-
-        # write nlst.txt file with config for n
-        with open(nlst_filename, 'w') as file:
-            for line in new_nlst:
-                file.write(line)
-        out_name = out_file.replace('.txt', '')
+        # prepare new nlst file
+        nlst_file, output_file = parse_and_write_new_config(input_filename=input_filename, run_num=n, run_id=run_id)
 
         # run FSM
-        os.system(f'{fsm_binary} < {nlst_filename}')
-
-        # move FSM output file to output directory
-        save_file = os.path.join('output', out_name + '_' + n_binary + '.txt')
-        os.replace(out_file, save_file)
-        print(f'Output file: {save_file}\n')
+        os.system(f'{fsm_binary} < {nlst_file}')
+        print(f'FSM run finished, output file: {output_file}\n')
 
 
 if __name__ == "__main__":
@@ -67,8 +79,6 @@ if __name__ == "__main__":
         raise Exception(f'Input file {namelist_filename} does not exist')
 
     # check if FSM binary exists
-    fsm_binary_unix = os.path.join('./FSM')
-    fsm_binary_win = os.path.join('FSM.exe')
     if os.path.isfile(fsm_binary_unix):
         fsm_binary = fsm_binary_unix
     elif os.path.isfile(fsm_binary_win):
@@ -76,4 +86,4 @@ if __name__ == "__main__":
     else:
         raise Exception(f'FSM binary does not exist, please compile first')
 
-    perform_fsm_routine(namelist_filename, fsm_binary)
+    perform_fsm_routine(input_filename=namelist_filename, fsm_binary=fsm_binary)

@@ -1,6 +1,6 @@
 # Publications using FSM
 
-Alonso-Gonzalez, E, K Aalstad, N Pirk, M Mazzolini, D Treichler, P Leclercq, S Westermann, JI Lopez-Moreno and S Gascoin, 2023. Spatio-temporal information propagation using sparse observations in hyper-resolution ensemble-based snow data assimilation}. *Hydrology and Earth System Sciences*, **27**,
+Alonso-Gonzalez, E, K Aalstad, N Pirk, M Mazzolini, D Treichler, P Leclercq, S Westermann, JI Lopez-Moreno and S Gascoin, 2023. Spatio-temporal information propagation using sparse observations in hyper-resolution ensemble-based snow data assimilation. *Hydrology and Earth System Sciences*, **27**,
 [doi:10.5194/hess-27-4637-2023](https://hess.copernicus.org/articles/27/4637/2023/).
 
 Alonso-Gonzalez, E, K Aalstad, M Wassim Baba, J Revuelto, J I Lopez-Moreno, J Fiddes, R Essery and S Gascoin, 2022. The Multiple Snow Data Assimilation System (MuSA v1.0). *Geoscientific Model Development*, **5**, [doi:10.5194/gmd-15-9127-2022](https://doi.org/10.5194/gmd-15-9127-2022).
@@ -9,7 +9,7 @@ Alonso-Gonzalez, E, S Gascoin, S Arioli and G Picard, 2023. Exploring the potent
 
 Alonso-Gonzalez, E., E. Gutmann, K. Aalstad, A. Fayad, M. Bouchet and S. Gascoin, 2021. Snowpack dynamics in the Lebanese mountains from quasi-dynamically downscaled ERA5 reanalysis updated by assimilating remotely sensed fractional snow-covered area. *Hydrology and Earth System Sciences*, **25**, 4455-4471, [10.5194/hess-25-4455-2021](https://hess.copernicus.org/articles/25/4455/2021/).
 
-Alonso-Gonzalez, E, JI Lopez-Moreno, S Gascoin, M GarcÃ­a-Valdecasas Ojed, A Sanmiguel-Vallelado, F Navarro-Serrano, J Revuelto, A Ceballos, MJ Esteban-Parr and R Essery, 2018. Daily gridded datasets of snow depth and snow water equivalent for the Iberian Peninsula from 1980 to 2014. *Earth System Science Data*, **10**, 303-315, [doi:10.5194/essd-10-303-2018](https://doi.org/10.5194/essd-10-303-2018).
+Alonso-Gonzalez, E, JI Lopez-Moreno, S Gascoin, M Garci­a-Valdecasas Ojed, A Sanmiguel-Vallelado, F Navarro-Serrano, J Revuelto, A Ceballos, MJ Esteban-Parr and R Essery, 2018. Daily gridded datasets of snow depth and snow water equivalent for the Iberian Peninsula from 1980 to 2014. *Earth System Science Data*, **10**, 303-315, [doi:10.5194/essd-10-303-2018](https://doi.org/10.5194/essd-10-303-2018).
 
 Alonso-Gonzalez, E, JI Lopez-Moreno, F Navarro-Serrano, A Sanmiguel-Vallelado, M Aznarez-Balta, J Revuelto and A Ceballos, 2020. Snowpack sensitivity to temperature, precipitation, and solar radiation variability over an elevational gradient in the Iberian mountains. *Atmospheric Research*, **243**, 104973, [doi:10.1016/j.atmosres.2020.104973](https://doi.org/10.1016/j.atmosres.2020.104973).
 
@@ -17,7 +17,7 @@ Berg, J, D Reynolds, L Quéno, T Jonas, M Lehning, R Mott, 2024. A seasonal snowp
 
 Bonsoms, J, J I Lopez-Moreno and E Alonso-Gonzalez, 2023. Snow sensitivity to temperature and precipitation change during compound cold-hot and wet-dry seasons in the Pyrenees. *The Cryosphere*, **17**, 1307-1326, [doi:10.5194/tc-17-1307-2023](https://doi.org/10.5194/tc-17-1307-2023).
 
-Bonsoms, J, M Oliva, E Alonso-Gonzalez, J Revuelto, J I Lopez-Moreno, 2024. Impact of climate change on snowpack dynamics in coastal Central-Western Greenland. *Science of The Total Environment*, **913**, [doi:10.1016/j.scitotenv.2023.169616]((https://www.sciencedirect.com/science/article/pii/S0048969723082463)
+Bonsoms, J, M Oliva, E Alonso-Gonzalez, J Revuelto, J I Lopez-Moreno, 2024. Impact of climate change on snowpack dynamics in coastal Central-Western Greenland. *Science of The Total Environment*, **913**, [doi:10.1016/j.scitotenv.2023.169616](https://www.sciencedirect.com/science/article/pii/S0048969723082463)
 
 De Gregorio, L, D Guenther, M Callegari, U Strasser, M Zebisch, L Bruzzone and C Notarnicola, 2021. Improving SWE estimation by fusion of snow models with topographic and remotely sensed data. *Remote Sensing*, **11**, [https://doi.org/10.3390/rs11172033](https://doi.org/10.3390/rs11172033).
 
@@ -29,7 +29,7 @@ Guenther, D, T Marke, R Essery and U Strasser, 2019. Uncertainties in snowpack s
 
 Krinner, G, C Derksen, R Essery et al., 2018. ESM-SnowMIP: assessing snow models and quantifying snow-related climate feedbacks. *Geoscientific Model Development*, **11**, 5027-5049, [doi:10.5194/gmd-11-5027-2018](https://doi.org/10.5194/gmd-11-5027-2018).
 
-López-Moreno, JI, N Callow, H McGowan, R Webb, A Schwartz, S Bilish, J Revuelto, S Gascoin, C Deschamps-Berger, E Alonso-González, 2024. Marginal snowpacks: The basis for a global definition and existing research needs. *Earth-Science Reviews*, **252**, [doi:10.1016/j.earscirev.2024.104751](https://doi.org/10.1016/j.earscirev.2024.104751).
+Lopez-Moreno, JI, N Callow, H McGowan, R Webb, A Schwartz, S Bilish, J Revuelto, S Gascoin, C Deschamps-Berger, E Alonso-Gonzalez, 2024. Marginal snowpacks: The basis for a global definition and existing research needs. *Earth-Science Reviews*, **252**, [doi:10.1016/j.earscirev.2024.104751](https://doi.org/10.1016/j.earscirev.2024.104751).
 
 Magnusson, J, N Wever, R Essery, N Helbig, A Winstral and T Jonas, 2015. Evaluating snow models with varying process representations for hydrological applications. *Water Resources Research*, **51**, 2707-2723, [doi:10.1002/2014WR016498](http://onlinelibrary.wiley.com/doi/10.1002/2014WR016498/abstract).
 

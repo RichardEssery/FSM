@@ -77,5 +77,5 @@ Priestley, A, 2022. Using geophysical data to understand liquid water dynamics i
 
 Pritchard, D, 2019. Evaluation of climate and hydrological models for impact projections in the Upper Indus Basin. PhD thesis, Newcastle University, UK, [http://theses.ncl.ac.uk/jspui/handle/10443/4706](http://theses.ncl.ac.uk/jspui/handle/10443/4706).
 
-Wright, M, 2021. The potential impact of cliamte change on seasonal snow in the Clutha/Mata-Au catchment, New Zealand. Master of Applied Science in Environmental Management, University of Otago, New Zealand. 
+Wright, M, 2021. The potential impact of climate change on seasonal snow in the Clutha/Mata-Au catchment, New Zealand. Master of Applied Science in Environmental Management, University of Otago, New Zealand. 
 
